@@ -10,6 +10,7 @@
   <script src="js/datos.js"></script>
   <script src="js/paneles.js"></script>
   <script src="js/terminal-codigo.js"></script>
+  <script src="js/recorrido.js"></script>
 </head>
 <body>
   <a-scene fog="type: exponential; color: #08131f; density: 0.045">
@@ -70,9 +71,82 @@
              color="#0e1e30"></a-box>
     </a-entity>
 
-    <!-- Cámara: en escritorio WASD + mouse; en Quest funciona igual sin cambios -->
-    <a-entity camera look-controls wasd-controls position="0 1.6 0">
-      <a-cursor color="#4dd8ff"></a-cursor>
+    <!-- HOTSPOT: sala de control -> panorama de crecimiento -->
+    <a-entity position="-3.2 0 -0.5">
+      <a-circle class="clickable" teletransporte="destino: -12 0 0"
+                rotation="-90 0 0" position="0 0.02 0" radius="0.5"
+                color="#7dffb0" opacity="0.35"
+                material="shader: flat; side: double"></a-circle>
+      <a-ring rotation="-90 0 0" position="0 0.03 0"
+              radius-inner="0.42" radius-outer="0.5" color="#7dffb0"
+              material="shader: flat"
+              animation="property: scale; from: 1 1 1; to: 1.18 1.18 1.18; dir: alternate; loop: true; dur: 1200"></a-ring>
+      <a-text value="PANORAMA DE\nCRECIMIENTO" position="0 1.15 0" rotation="0 90 0"
+              align="center" color="#7dffb0" width="3"></a-text>
+    </a-entity>
+
+    <!-- ============ ZONA 3: PANORAMA DE CRECIMIENTO (centro en x=-12) ============ -->
+    <a-entity position="-12 0 0">
+      <a-text value="PANORAMA DE CRECIMIENTO" position="0 3.6 -4" align="center"
+              color="#7dffb0" width="8"></a-text>
+
+      <!-- línea de tiempo: 3 estelas, la empresa evoluciona de izquierda a derecha -->
+      <!-- HOY -->
+      <a-entity position="-2.6 0 -3.5">
+        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
+        <a-box width="0.5" height="0.8" depth="0.5" position="0 0.65 0" color="#3a5a74"
+               animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 2000"></a-box>
+        <a-text value="HOY\nDecisiones a ciegas" position="0 1.7 0" align="center"
+                color="#8aa4b8" width="2.6"></a-text>
+      </a-entity>
+      <!-- CON DATOS -->
+      <a-entity position="0 0 -3.5">
+        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
+        <a-box width="0.5" height="1.6" depth="0.5" position="0 1.05 0" color="#1990b8"
+               animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 1600"></a-box>
+        <a-text value="CON DATOS\nDecisiones informadas" position="0 2.5 0" align="center"
+                color="#4dd8ff" width="2.6"></a-text>
+      </a-entity>
+      <!-- EVOLUCIONADA -->
+      <a-entity position="2.6 0 -3.5">
+        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
+        <a-box width="0.5" height="2.6" depth="0.5" position="0 1.55 0" color="#2ec98a"
+               animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 1200"></a-box>
+        <a-text value="EVOLUCIONADA\nPredice y crece" position="0 3.5 0" align="center"
+                color="#7dffb0" width="2.6"></a-text>
+      </a-entity>
+
+      <!-- CTA de cierre, detrás de la línea de tiempo -->
+      <a-plane width="5.2" height="1.5" position="0 2 -6.5" color="#0e1e30"
+               material="shader: flat"></a-plane>
+      <a-text value="NOSOTROS CONSTRUIMOS ESTO" position="0 2.35 -6.45" align="center"
+              color="#4dd8ff" width="7"></a-text>
+      <a-text value="Pregunta por tus 30 minutos de asesoria gratuita"
+              position="0 1.75 -6.45" align="center" color="#c8dcec" width="5"></a-text>
+
+      <!-- HOTSPOT: volver a la sala de control -->
+      <a-entity position="3.2 0 0.5">
+        <a-circle class="clickable" teletransporte="destino: 0 0 0"
+                  rotation="-90 0 0" position="0 0.02 0" radius="0.5"
+                  color="#4dd8ff" opacity="0.35"
+                  material="shader: flat; side: double"></a-circle>
+        <a-ring rotation="-90 0 0" position="0 0.03 0"
+                radius-inner="0.42" radius-outer="0.5" color="#4dd8ff"
+                material="shader: flat"
+                animation="property: scale; from: 1 1 1; to: 1.18 1.18 1.18; dir: alternate; loop: true; dur: 1200"></a-ring>
+        <a-text value="VOLVER A LA\nSALA DE CONTROL" position="0 1.15 0" rotation="0 -90 0"
+                align="center" color="#4dd8ff" width="3"></a-text>
+      </a-entity>
+    </a-entity>
+
+    <!-- Cámara con rig teletransportable. Cursor con fuse: mirar 1.5s = clic (sin controles) -->
+    <a-entity id="rig" position="0 0 0">
+      <a-entity camera look-controls wasd-controls position="0 1.6 0">
+        <a-cursor color="#4dd8ff" fuse="true" fuse-timeout="1500"
+                  raycaster="objects: .clickable; far: 25"
+                  animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.4 0.4 0.4; dur: 1500"
+                  animation__reset="property: scale; startEvents: mouseleave, click; to: 1 1 1; dur: 150"></a-cursor>
+      </a-entity>
     </a-entity>
   </a-scene>
 </body>
