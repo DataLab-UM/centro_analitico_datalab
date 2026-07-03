@@ -6,7 +6,9 @@
   <meta name="description" content="Recorrido VR por un centro analítico de datos">
   <!-- ponytail: CDN por ahora; antes de la feria se empaqueta local (offline-first) -->
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-  <script src="js/panel-datos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/paneles.js"></script>
 </head>
 <body>
   <a-scene fog="type: exponential; color: #08131f; density: 0.045">
@@ -23,17 +25,35 @@
              material="src: #grid; repeat: 40 40; shader: flat"></a-plane>
 
     <!-- Título flotante -->
-    <a-text value="CENTRO ANALITICO" position="0 2.8 -4" align="center"
+    <a-text value="CENTRO ANALITICO" position="0 3.4 -4" align="center"
             color="#4dd8ff" width="8"></a-text>
 
-    <!-- Panel con dashboard animado (canvas -> textura) -->
-    <a-plane panel-datos position="0 1.7 -3" width="2.4" height="1.35"
+    <!-- SALA DE CONTROL: 4 paneles en arco (radio 3.2 m) mirando al visitante -->
+    <a-plane panel-echarts="tipo: prediccion" width="2.2" height="1.24"
+             position="-2.59 1.7 -1.88" rotation="0 54 0"
              material="shader: flat; side: double"></a-plane>
 
-    <!-- Anillo animado de decoración -->
-    <a-torus position="0 1.7 -3.05" radius="1.15" radius-tubular="0.008"
-             color="#4dd8ff" opacity="0.5"
-             animation="property: rotation; to: 0 0 360; loop: true; dur: 12000; easing: linear"></a-torus>
+    <a-plane panel-echarts="tipo: ventas" width="2.2" height="1.24"
+             position="-0.99 1.7 -3.04" rotation="0 18 0"
+             material="shader: flat; side: double"></a-plane>
+
+    <a-plane panel-echarts="tipo: kpi" width="2.2" height="1.24"
+             position="0.99 1.7 -3.04" rotation="0 -18 0"
+             material="shader: flat; side: double"></a-plane>
+
+    <a-plane panel-echarts="tipo: calor" width="2.2" height="1.24"
+             position="2.59 1.7 -1.88" rotation="0 -54 0"
+             material="shader: flat; side: double"></a-plane>
+
+    <!-- Núcleo decorativo: anillos girando al centro de la sala -->
+    <a-entity position="0 2.5 -4.5">
+      <a-torus radius="0.55" radius-tubular="0.006" color="#4dd8ff" opacity="0.6"
+               animation="property: rotation; to: 360 360 0; loop: true; dur: 14000; easing: linear"></a-torus>
+      <a-torus radius="0.4" radius-tubular="0.006" color="#7dffb0" opacity="0.5"
+               animation="property: rotation; to: -360 0 360; loop: true; dur: 10000; easing: linear"></a-torus>
+      <a-sphere radius="0.12" color="#4dd8ff" opacity="0.9"
+                animation="property: scale; from: 1 1 1; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 1500"></a-sphere>
+    </a-entity>
 
     <!-- Cámara: en escritorio WASD + mouse; en Quest funciona igual sin cambios -->
     <a-entity camera look-controls wasd-controls position="0 1.6 0">
