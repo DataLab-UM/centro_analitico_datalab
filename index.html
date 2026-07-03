@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/paneles.js"></script>
+  <script src="js/terminal-codigo.js"></script>
 </head>
 <body>
   <a-scene fog="type: exponential; color: #08131f; density: 0.045">
@@ -53,6 +54,20 @@
                animation="property: rotation; to: -360 0 360; loop: true; dur: 10000; easing: linear"></a-torus>
       <a-sphere radius="0.12" color="#4dd8ff" opacity="0.9"
                 animation="property: scale; from: 1 1 1; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 1500"></a-sphere>
+    </a-entity>
+
+    <!-- ZONA DE DESARROLLO: detrás del visitante, gírate y ve el código en vivo -->
+    <a-entity position="0 0 4.6" rotation="0 180 0">
+      <a-text value="DESARROLLO EN VIVO" position="0 3.3 0" align="center"
+              color="#7dffb0" width="6"></a-text>
+      <!-- marco del monitor -->
+      <a-plane width="3.4" height="2.2" position="0 1.9 0.02" color="#0e1e30"
+               material="shader: flat"></a-plane>
+      <a-plane terminal-codigo width="3.2" height="2.0" position="0 1.9 0"
+               material="shader: flat; side: double"></a-plane>
+      <!-- base tipo tótem -->
+      <a-box width="0.5" height="0.8" depth="0.18" position="0 0.4 0.05"
+             color="#0e1e30"></a-box>
     </a-entity>
 
     <!-- Cámara: en escritorio WASD + mouse; en Quest funciona igual sin cambios -->
