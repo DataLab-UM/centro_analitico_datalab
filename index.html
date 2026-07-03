@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <title>Centro Analítico Inmersivo</title>
   <meta name="description" content="Recorrido VR por un centro analítico de datos">
-  <!-- ponytail: CDN por ahora; antes de la feria se empaqueta local (offline-first) -->
-  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <!-- offline-first: librerías y fuente empaquetadas en el repo, cero red en runtime -->
+  <script src="vendor/aframe.min.js"></script>
+  <script src="vendor/echarts.min.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/paneles.js"></script>
   <script src="js/terminal-codigo.js"></script>
@@ -27,7 +27,7 @@
              material="src: #grid; repeat: 40 40; shader: flat"></a-plane>
 
     <!-- Título flotante -->
-    <a-text value="CENTRO ANALITICO" position="0 3.4 -4" align="center"
+    <a-text font="assets/fonts/Roboto-msdf.json" value="CENTRO ANALITICO" position="0 3.4 -4" align="center"
             color="#4dd8ff" width="8"></a-text>
 
     <!-- SALA DE CONTROL: 4 paneles en arco (radio 3.2 m) mirando al visitante -->
@@ -59,7 +59,7 @@
 
     <!-- ZONA DE DESARROLLO: detrás del visitante, gírate y ve el código en vivo -->
     <a-entity position="0 0 4.6" rotation="0 180 0">
-      <a-text value="DESARROLLO EN VIVO" position="0 3.3 0" align="center"
+      <a-text font="assets/fonts/Roboto-msdf.json" value="DESARROLLO EN VIVO" position="0 3.3 0" align="center"
               color="#7dffb0" width="6"></a-text>
       <!-- marco del monitor -->
       <a-plane width="3.4" height="2.2" position="0 1.9 0.02" color="#0e1e30"
@@ -81,13 +81,13 @@
               radius-inner="0.42" radius-outer="0.5" color="#7dffb0"
               material="shader: flat"
               animation="property: scale; from: 1 1 1; to: 1.18 1.18 1.18; dir: alternate; loop: true; dur: 1200"></a-ring>
-      <a-text value="PANORAMA DE\nCRECIMIENTO" position="0 1.15 0" rotation="0 90 0"
+      <a-text font="assets/fonts/Roboto-msdf.json" value="PANORAMA DE\nCRECIMIENTO" position="0 1.15 0" rotation="0 90 0"
               align="center" color="#7dffb0" width="3"></a-text>
     </a-entity>
 
     <!-- ============ ZONA 3: PANORAMA DE CRECIMIENTO (centro en x=-12) ============ -->
     <a-entity position="-12 0 0">
-      <a-text value="PANORAMA DE CRECIMIENTO" position="0 3.6 -4" align="center"
+      <a-text font="assets/fonts/Roboto-msdf.json" value="PANORAMA DE CRECIMIENTO" position="0 3.6 -4" align="center"
               color="#7dffb0" width="8"></a-text>
 
       <!-- línea de tiempo: 3 estelas, la empresa evoluciona de izquierda a derecha -->
@@ -96,7 +96,7 @@
         <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
         <a-box width="0.5" height="0.8" depth="0.5" position="0 0.65 0" color="#3a5a74" material="transparent: true"
                animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 2000"></a-box>
-        <a-text value="HOY\nDecisiones a ciegas" position="0 1.7 0" align="center"
+        <a-text font="assets/fonts/Roboto-msdf.json" value="HOY\nDecisiones a ciegas" position="0 1.7 0" align="center"
                 color="#8aa4b8" width="2.6"></a-text>
       </a-entity>
       <!-- CON DATOS -->
@@ -104,7 +104,7 @@
         <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
         <a-box width="0.5" height="1.6" depth="0.5" position="0 1.05 0" color="#1990b8" material="transparent: true"
                animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 1600"></a-box>
-        <a-text value="CON DATOS\nDecisiones informadas" position="0 2.5 0" align="center"
+        <a-text font="assets/fonts/Roboto-msdf.json" value="CON DATOS\nDecisiones informadas" position="0 2.5 0" align="center"
                 color="#4dd8ff" width="2.6"></a-text>
       </a-entity>
       <!-- EVOLUCIONADA -->
@@ -112,16 +112,16 @@
         <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
         <a-box width="0.5" height="2.6" depth="0.5" position="0 1.55 0" color="#2ec98a" material="transparent: true"
                animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 1200"></a-box>
-        <a-text value="EVOLUCIONADA\nPredice y crece" position="0 3.5 0" align="center"
+        <a-text font="assets/fonts/Roboto-msdf.json" value="EVOLUCIONADA\nPredice y crece" position="0 3.5 0" align="center"
                 color="#7dffb0" width="2.6"></a-text>
       </a-entity>
 
       <!-- CTA de cierre, detrás de la línea de tiempo -->
       <a-plane width="5.2" height="1.5" position="0 2 -6.5" color="#0e1e30"
                material="shader: flat"></a-plane>
-      <a-text value="NOSOTROS CONSTRUIMOS ESTO" position="0 2.35 -6.45" align="center"
+      <a-text font="assets/fonts/Roboto-msdf.json" value="NOSOTROS CONSTRUIMOS ESTO" position="0 2.35 -6.45" align="center"
               color="#4dd8ff" width="7"></a-text>
-      <a-text value="Pregunta por tus 30 minutos de asesoria gratuita"
+      <a-text font="assets/fonts/Roboto-msdf.json" value="Pregunta por tus 30 minutos de asesoria gratuita"
               position="0 1.75 -6.45" align="center" color="#c8dcec" width="5"></a-text>
 
       <!-- HOTSPOT: volver a la sala de control -->
@@ -134,7 +134,7 @@
                 radius-inner="0.42" radius-outer="0.5" color="#4dd8ff"
                 material="shader: flat"
                 animation="property: scale; from: 1 1 1; to: 1.18 1.18 1.18; dir: alternate; loop: true; dur: 1200"></a-ring>
-        <a-text value="VOLVER A LA\nSALA DE CONTROL" position="0 1.15 0" rotation="0 -90 0"
+        <a-text font="assets/fonts/Roboto-msdf.json" value="VOLVER A LA\nSALA DE CONTROL" position="0 1.15 0" rotation="0 -90 0"
                 align="center" color="#4dd8ff" width="3"></a-text>
       </a-entity>
     </a-entity>
