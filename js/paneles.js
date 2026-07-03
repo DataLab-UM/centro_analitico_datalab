@@ -5,7 +5,7 @@
  */
 (function () {
   const FUENTE = 'monospace';
-  const AZUL = '#4dd8ff', VERDE = '#7dffb0', FONDO = '#0a1420';
+  const AZUL = '#4dd8ff', MARCA = '#5fd87a', VERDE = '#7dffb0', FONDO = '#0a1420';
   const EJE = { axisLabel: { color: '#3a6a8a', fontSize: 20, fontFamily: FUENTE },
                 splitLine: { lineStyle: { color: '#122436' } } };
 
@@ -13,7 +13,7 @@
     return {
       text: texto, subtext: sub || '',
       left: 24, top: 14,
-      textStyle: { color: AZUL, fontSize: 32, fontFamily: FUENTE },
+      textStyle: { color: MARCA, fontSize: 32, fontFamily: FUENTE },
       subtextStyle: { color: VERDE, fontSize: 46, fontWeight: 'bold', fontFamily: FUENTE }
     };
   }

@@ -106,7 +106,7 @@
       // fondo + barra de título estilo editor
       c.fillStyle = '#08111c';
       c.fillRect(0, 0, ANCHO, ALTO);
-      c.fillStyle = '#0e1e30';
+      c.fillStyle = '#133445';
       c.fillRect(0, 0, ANCHO, BARRA);
       ['#ff6b6b', '#ffd27d', '#7dffb0'].forEach((color, i) => {
         c.fillStyle = color;
@@ -116,7 +116,7 @@
       });
       c.fillStyle = '#5a7a94';
       c.font = '22px monospace';
-      c.fillText('~/centro-analitico — python', 130, BARRA / 2 + 8);
+      c.fillText('~/datalab-um — python', 130, BARRA / 2 + 8);
 
       // líneas completadas
       c.font = '24px monospace';

@@ -13,22 +13,21 @@
   <script src="js/recorrido.js"></script>
 </head>
 <body>
-  <a-scene fog="type: exponential; color: #08131f; density: 0.045">
+  <a-scene>
     <a-assets>
-      <img id="cielo" src="assets/skybox.png">
-      <img id="grid" src="assets/piso-grid.png">
+      <img id="cielo-sala" src="assets/skybox-sala.jpg">
+      <img id="cielo-panorama" src="assets/skybox-panorama.jpg">
     </a-assets>
 
-    <!-- Skybox 360 equirectangular (reemplazable por Blockade Labs, mismo archivo) -->
-    <a-sky src="#cielo" material="fog: false"></a-sky>
-
-    <!-- Piso: grid que se pierde en la niebla hacia el horizonte -->
-    <a-plane rotation="-90 0 0" width="80" height="80" position="0 0 0"
-             material="src: #grid; repeat: 40 40; shader: flat"></a-plane>
+    <!-- Skybox 360 brandeado DataLab (rotado para que el logo horneado quede
+         sobre la zona de desarrollo y no compita con los paneles) -->
+    <a-sky src="#cielo-sala" rotation="0 180 0"></a-sky>
 
     <!-- Título flotante -->
-    <a-text font="assets/fonts/Roboto-msdf.json" value="CENTRO ANALITICO" position="0 3.4 -4" align="center"
-            color="#4dd8ff" width="8"></a-text>
+    <a-text font="assets/fonts/Roboto-msdf.json" value="DATALAB UM" position="0 3.7 -4" align="center"
+            color="#5fd87a" width="9"></a-text>
+    <a-text font="assets/fonts/Roboto-msdf.json" value="Centro Analitico" position="0 3.15 -4" align="center"
+            color="#c8dcec" width="5"></a-text>
 
     <!-- SALA DE CONTROL: 4 paneles en arco (radio 3.2 m) mirando al visitante -->
     <a-plane panel-echarts="tipo: prediccion" width="2.2" height="1.24"
@@ -49,11 +48,11 @@
 
     <!-- Núcleo decorativo: anillos girando al centro de la sala -->
     <a-entity position="0 2.5 -4.5">
-      <a-torus radius="0.55" radius-tubular="0.006" color="#4dd8ff" opacity="0.6"
+      <a-torus radius="0.55" radius-tubular="0.006" color="#5fd87a" opacity="0.6"
                animation="property: rotation; to: 360 360 0; loop: true; dur: 14000; easing: linear"></a-torus>
       <a-torus radius="0.4" radius-tubular="0.006" color="#7dffb0" opacity="0.5"
                animation="property: rotation; to: -360 0 360; loop: true; dur: 10000; easing: linear"></a-torus>
-      <a-sphere radius="0.12" color="#4dd8ff" opacity="0.9"
+      <a-sphere radius="0.12" color="#5fd87a" opacity="0.9"
                 animation="property: scale; from: 1 1 1; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 1500"></a-sphere>
     </a-entity>
 
@@ -62,18 +61,18 @@
       <a-text font="assets/fonts/Roboto-msdf.json" value="DESARROLLO EN VIVO" position="0 3.3 0" align="center"
               color="#7dffb0" width="6"></a-text>
       <!-- marco del monitor -->
-      <a-plane width="3.4" height="2.2" position="0 1.9 0.02" color="#0e1e30"
+      <a-plane width="3.4" height="2.2" position="0 1.9 0.02" color="#133445"
                material="shader: flat"></a-plane>
       <a-plane terminal-codigo width="3.2" height="2.0" position="0 1.9 0"
                material="shader: flat; side: double"></a-plane>
       <!-- base tipo tótem -->
       <a-box width="0.5" height="0.8" depth="0.18" position="0 0.4 0.05"
-             color="#0e1e30"></a-box>
+             color="#133445"></a-box>
     </a-entity>
 
     <!-- HOTSPOT: sala de control -> panorama de crecimiento -->
     <a-entity position="-3.2 0 -0.5">
-      <a-circle class="clickable" teletransporte="destino: -12 0 0"
+      <a-circle class="clickable" teletransporte="destino: -12 0 0; cielo: #cielo-panorama"
                 rotation="-90 0 0" position="0 0.02 0" radius="0.5"
                 color="#7dffb0" opacity="0.35"
                 material="shader: flat; side: double"></a-circle>
@@ -93,7 +92,7 @@
       <!-- línea de tiempo: 3 estelas, la empresa evoluciona de izquierda a derecha -->
       <!-- HOY -->
       <a-entity position="-2.6 0 -3.5">
-        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
+        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
         <a-box width="0.5" height="0.8" depth="0.5" position="0 0.65 0" color="#3a5a74" material="transparent: true"
                animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 2000"></a-box>
         <a-text font="assets/fonts/Roboto-msdf.json" value="HOY\nDecisiones a ciegas" position="0 1.7 0" align="center"
@@ -101,15 +100,15 @@
       </a-entity>
       <!-- CON DATOS -->
       <a-entity position="0 0 -3.5">
-        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
+        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
         <a-box width="0.5" height="1.6" depth="0.5" position="0 1.05 0" color="#1990b8" material="transparent: true"
                animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 1600"></a-box>
         <a-text font="assets/fonts/Roboto-msdf.json" value="CON DATOS\nDecisiones informadas" position="0 2.5 0" align="center"
-                color="#4dd8ff" width="2.6"></a-text>
+                color="#5fd87a" width="2.6"></a-text>
       </a-entity>
       <!-- EVOLUCIONADA -->
       <a-entity position="2.6 0 -3.5">
-        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#0e1e30"></a-box>
+        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
         <a-box width="0.5" height="2.6" depth="0.5" position="0 1.55 0" color="#2ec98a" material="transparent: true"
                animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 1200"></a-box>
         <a-text font="assets/fonts/Roboto-msdf.json" value="EVOLUCIONADA\nPredice y crece" position="0 3.5 0" align="center"
@@ -117,32 +116,34 @@
       </a-entity>
 
       <!-- CTA de cierre, detrás de la línea de tiempo -->
-      <a-plane width="5.2" height="1.5" position="0 2 -6.5" color="#0e1e30"
+      <a-plane width="5.2" height="1.5" position="0 2 -6.5" color="#133445"
                material="shader: flat"></a-plane>
-      <a-text font="assets/fonts/Roboto-msdf.json" value="NOSOTROS CONSTRUIMOS ESTO" position="0 2.35 -6.45" align="center"
-              color="#4dd8ff" width="7"></a-text>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="DATALAB UM CONSTRUYE ESTO" position="0 2.45 -6.45" align="center"
+              color="#5fd87a" width="7"></a-text>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="Tecnologia que inspira confianza"
+              position="0 1.95 -6.45" align="center" color="#c8dcec" width="5"></a-text>
       <a-text font="assets/fonts/Roboto-msdf.json" value="Pregunta por tus 30 minutos de asesoria gratuita"
-              position="0 1.75 -6.45" align="center" color="#c8dcec" width="5"></a-text>
+              position="0 1.55 -6.45" align="center" color="#8aa4b8" width="4.4"></a-text>
 
       <!-- HOTSPOT: volver a la sala de control -->
       <a-entity position="3.2 0 0.5">
-        <a-circle class="clickable" teletransporte="destino: 0 0 0"
+        <a-circle class="clickable" teletransporte="destino: 0 0 0; cielo: #cielo-sala"
                   rotation="-90 0 0" position="0 0.02 0" radius="0.5"
-                  color="#4dd8ff" opacity="0.35"
+                  color="#5fd87a" opacity="0.35"
                   material="shader: flat; side: double"></a-circle>
         <a-ring rotation="-90 0 0" position="0 0.03 0"
-                radius-inner="0.42" radius-outer="0.5" color="#4dd8ff"
+                radius-inner="0.42" radius-outer="0.5" color="#5fd87a"
                 material="shader: flat"
                 animation="property: scale; from: 1 1 1; to: 1.18 1.18 1.18; dir: alternate; loop: true; dur: 1200"></a-ring>
         <a-text font="assets/fonts/Roboto-msdf.json" value="VOLVER A LA\nSALA DE CONTROL" position="0 1.15 0" rotation="0 -90 0"
-                align="center" color="#4dd8ff" width="3"></a-text>
+                align="center" color="#5fd87a" width="3"></a-text>
       </a-entity>
     </a-entity>
 
     <!-- Cámara con rig teletransportable. Cursor con fuse: mirar 1.5s = clic (sin controles) -->
     <a-entity id="rig" position="0 0 0">
       <a-entity camera look-controls wasd-controls position="0 1.6 0">
-        <a-cursor color="#4dd8ff" fuse="true" fuse-timeout="1500"
+        <a-cursor color="#5fd87a" fuse="true" fuse-timeout="1500"
                   raycaster="objects: .clickable; far: 25"
                   animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.4 0.4 0.4; dur: 1500"
                   animation__reset="property: scale; startEvents: mouseleave, click; to: 1 1 1; dur: 150"></a-cursor>
