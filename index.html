@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Centro Analítico Inmersivo</title>
+  <meta name="description" content="Recorrido VR por un centro analítico de datos">
+  <!-- ponytail: CDN por ahora; antes de la feria se empaquetan local (offline-first) -->
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
+  <script src="js/panel-datos.js"></script>
+</head>
+<body>
+  <a-scene>
+    <!-- Ambiente futurista placeholder; días 2-3 se reemplaza por skybox 360 propio -->
+    <a-entity environment="preset: tron; fog: 0.6; playArea: 1.2"></a-entity>
+
+    <!-- Título flotante -->
+    <a-text value="CENTRO ANALITICO" position="0 2.8 -4" align="center"
+            color="#4dd8ff" width="8"></a-text>
+
+    <!-- Panel con dashboard animado (canvas -> textura). Valida la técnica clave. -->
+    <a-plane panel-datos position="0 1.7 -3" width="2.4" height="1.35"
+             material="shader: flat; side: double"></a-plane>
+
+    <!-- Anillo animado de decoración: confirma que el render loop corre fluido -->
+    <a-torus position="0 1.7 -3.05" radius="1.15" radius-tubular="0.008"
+             color="#4dd8ff" opacity="0.5"
+             animation="property: rotation; to: 0 0 360; loop: true; dur: 12000; easing: linear"></a-torus>
+
+    <!-- Cámara: en escritorio WASD + mouse; en Quest funciona igual sin cambios -->
+    <a-entity camera look-controls wasd-controls position="0 1.6 0">
+      <a-cursor color="#4dd8ff"></a-cursor>
+    </a-entity>
+  </a-scene>
+</body>
+</html>
