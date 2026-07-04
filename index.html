@@ -2,52 +2,48 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>Centro Analítico Inmersivo</title>
-  <meta name="description" content="Recorrido VR por un centro analítico de datos">
+  <title>Centro Analítico Inmersivo — DataLab UM</title>
+  <meta name="description" content="Recorrido VR por las oficinas de DataLab UM">
   <!-- offline-first: librerías y fuente empaquetadas en el repo, cero red en runtime -->
   <script src="vendor/aframe.min.js"></script>
   <script src="vendor/echarts.min.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/paneles.js"></script>
   <script src="js/terminal-codigo.js"></script>
-  <script src="js/recorrido.js"></script>
+  <script src="js/portal.js"></script>
+  <script src="js/interaccion.js"></script>
 </head>
 <body>
   <a-scene>
     <a-assets>
-      <img id="cielo-sala" src="assets/skybox-sala.jpg">
+      <img id="cielo-lobby" src="assets/skybox-lobby.jpg">
+      <img id="cielo-bi" src="assets/skybox-bi.jpg">
+      <img id="cielo-ia" src="assets/skybox-ia.jpg">
+      <img id="cielo-web" src="assets/skybox-web.jpg">
       <img id="cielo-panorama" src="assets/skybox-panorama.jpg">
+      <img id="prev-lobby" src="assets/prev-lobby.jpg">
+      <img id="prev-bi" src="assets/prev-bi.jpg">
+      <img id="prev-ia" src="assets/prev-ia.jpg">
+      <img id="prev-web" src="assets/prev-web.jpg">
+      <img id="prev-ciudad" src="assets/prev-ciudad.jpg">
+      <img id="logo" src="assets/logo-icono.png">
     </a-assets>
 
-    <!-- Skybox 360 brandeado DataLab (rotado para que el logo horneado quede
-         sobre la zona de desarrollo y no compita con los paneles) -->
-    <a-sky src="#cielo-sala" rotation="0 180 0"></a-sky>
+    <a-sky src="#cielo-lobby" rotation="0 180 0"></a-sky>
 
-    <!-- Título flotante -->
-    <a-text font="assets/fonts/Roboto-msdf.json" value="DATALAB UM" position="0 3.7 -4" align="center"
-            color="#5fd87a" width="9"></a-text>
-    <a-text font="assets/fonts/Roboto-msdf.json" value="Centro Analitico" position="0 3.15 -4" align="center"
-            color="#c8dcec" width="5"></a-text>
+    <!-- ================= LOBBY / RECEPCION (origen) ================= -->
+    <!-- Letrero de bienvenida -->
+    <a-plane width="7.4" height="1.7" position="0 3.1 -5.2" color="#133445"
+             material="shader: flat; transparent: true; opacity: 0.88"></a-plane>
+    <a-image src="#logo" width="1" height="1" position="-2.9 3.1 -5.18"></a-image>
+    <a-text font="assets/fonts/Roboto-msdf.json" value="BIENVENIDO A DATALAB UM"
+            position="0.4 3.38 -5.15" align="center" color="#5fd87a" width="6.5"></a-text>
+    <a-text font="assets/fonts/Roboto-msdf.json"
+            value="Tecnologia que inspira confianza — mira un portal para entrar a cada oficina"
+            position="0.4 2.82 -5.15" align="center" color="#c8dcec" width="4.6"></a-text>
 
-    <!-- SALA DE CONTROL: 4 paneles en arco (radio 3.2 m) mirando al visitante -->
-    <a-plane panel-echarts="tipo: prediccion" width="2.2" height="1.24"
-             position="-2.59 1.7 -1.88" rotation="0 54 0"
-             material="shader: flat; side: double"></a-plane>
-
-    <a-plane panel-echarts="tipo: ventas" width="2.2" height="1.24"
-             position="-0.99 1.7 -3.04" rotation="0 18 0"
-             material="shader: flat; side: double"></a-plane>
-
-    <a-plane panel-echarts="tipo: kpi" width="2.2" height="1.24"
-             position="0.99 1.7 -3.04" rotation="0 -18 0"
-             material="shader: flat; side: double"></a-plane>
-
-    <a-plane panel-echarts="tipo: calor" width="2.2" height="1.24"
-             position="2.59 1.7 -1.88" rotation="0 -54 0"
-             material="shader: flat; side: double"></a-plane>
-
-    <!-- Núcleo decorativo: anillos girando al centro de la sala -->
-    <a-entity position="0 2.5 -4.5">
+    <!-- Nucleo decorativo elevado -->
+    <a-entity position="0 4.8 -7">
       <a-torus radius="0.55" radius-tubular="0.006" color="#5fd87a" opacity="0.6"
                animation="property: rotation; to: 360 360 0; loop: true; dur: 14000; easing: linear"></a-torus>
       <a-torus radius="0.4" radius-tubular="0.006" color="#7dffb0" opacity="0.5"
@@ -56,41 +52,173 @@
                 animation="property: scale; from: 1 1 1; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 1500"></a-sphere>
     </a-entity>
 
-    <!-- ZONA DE DESARROLLO: detrás del visitante, gírate y ve el código en vivo -->
-    <a-entity position="0 0 4.6" rotation="0 180 0">
-      <a-text font="assets/fonts/Roboto-msdf.json" value="DESARROLLO EN VIVO" position="0 3.3 0" align="center"
-              color="#7dffb0" width="6"></a-text>
-      <!-- marco del monitor -->
-      <a-plane width="3.4" height="2.2" position="0 1.9 0.02" color="#133445"
-               material="shader: flat"></a-plane>
-      <a-plane terminal-codigo width="3.2" height="2.0" position="0 1.9 0"
-               material="shader: flat; side: double"></a-plane>
-      <!-- base tipo tótem -->
-      <a-box width="0.5" height="0.8" depth="0.18" position="0 0.4 0.05"
-             color="#133445"></a-box>
+    <!-- Portales a las oficinas (arco de radio 6) -->
+    <a-entity portal="destino: -60 0 0; cielo: #cielo-bi; titulo: BUSINESS INTELLIGENCE; preview: #prev-bi"
+              position="-4.85 0 -3.53" rotation="0 54 0"></a-entity>
+    <a-entity portal="destino: 60 0 0; cielo: #cielo-ia; titulo: AGENTES DE IA; preview: #prev-ia"
+              position="-1.85 0 -5.71" rotation="0 18 0"></a-entity>
+    <a-entity portal="destino: 0 0 -60; cielo: #cielo-web; titulo: PLATAFORMAS WEB; preview: #prev-web"
+              position="1.85 0 -5.71" rotation="0 -18 0"></a-entity>
+    <a-entity portal="destino: 0 0 60; cielo: #cielo-panorama; titulo: PANORAMA DE\nCRECIMIENTO; preview: #prev-ciudad"
+              position="4.85 0 -3.53" rotation="0 -54 0"></a-entity>
+
+    <!-- ============ OFICINA BI & DESARROLLO (centro -60 0 0) ============ -->
+    <a-entity position="-60 0 0">
+      <a-plane width="8" height="1.3" position="0 3.9 -5" color="#133445"
+               material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="OFICINA BUSINESS INTELLIGENCE"
+              position="0 4.1 -4.95" align="center" color="#5fd87a" width="7"></a-text>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="Tus datos convertidos en decisiones, en tiempo real"
+              position="0 3.65 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
+
+      <!-- 4 tableros en arco amplio (radio 4.2, 50 grados entre si) con placa explicativa -->
+      <a-entity position="-4.06 0 -1.09" rotation="0 75 0">
+        <a-plane panel-echarts="tipo: prediccion" panel-interactivo width="2.6" height="1.46"
+                 position="0 1.95 0" material="shader: flat; side: double"></a-plane>
+        <a-plane width="2.35" height="0.62" position="0 0.85 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Cuanto venderas en las proximas semanas.\nCompra e invierte con anticipacion."
+                position="0 0.85 0.01" align="center" color="#c8dcec" width="2.15"></a-text>
+      </a-entity>
+
+      <a-entity position="-1.78 0 -3.81" rotation="0 25 0">
+        <a-plane panel-echarts="tipo: ventas" panel-interactivo width="2.6" height="1.46"
+                 position="0 1.95 0" material="shader: flat; side: double"></a-plane>
+        <a-plane width="2.35" height="0.62" position="0 0.85 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Ingresos entrando minuto a minuto.\nDetecta caidas al instante."
+                position="0 0.85 0.01" align="center" color="#c8dcec" width="2.15"></a-text>
+      </a-entity>
+
+      <a-entity position="1.78 0 -3.81" rotation="0 -25 0">
+        <a-plane panel-echarts="tipo: kpi" panel-interactivo width="2.6" height="1.46"
+                 position="0 1.95 0" material="shader: flat; side: double"></a-plane>
+        <a-plane width="2.35" height="0.62" position="0 0.85 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="La salud de tu operacion de un vistazo.\nAlertas antes de que sea problema."
+                position="0 0.85 0.01" align="center" color="#c8dcec" width="2.15"></a-text>
+      </a-entity>
+
+      <a-entity position="4.06 0 -1.09" rotation="0 -75 0">
+        <a-plane panel-echarts="tipo: calor" panel-interactivo width="2.6" height="1.46"
+                 position="0 1.95 0" material="shader: flat; side: double"></a-plane>
+        <a-plane width="2.35" height="0.62" position="0 0.85 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Cuando compran tus clientes.\nEnfoca tu equipo en las horas pico."
+                position="0 0.85 0.01" align="center" color="#c8dcec" width="2.15"></a-text>
+      </a-entity>
+
+      <!-- Rincon de desarrollo: girate y ve al equipo programando -->
+      <a-entity position="0 0 4.8" rotation="0 180 0">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="DESARROLLO EN VIVO"
+                position="0 3.5 0" align="center" color="#7dffb0" width="6"></a-text>
+        <a-plane width="3.6" height="2.3" position="0 2 -0.02" color="#133445"
+                 material="shader: flat"></a-plane>
+        <a-plane terminal-codigo="guion: desarrollo" width="3.4" height="2.12"
+                 position="0 2 0" material="shader: flat"></a-plane>
+        <a-box width="0.5" height="0.85" depth="0.18" position="0 0.42 -0.05"
+               color="#133445"></a-box>
+      </a-entity>
+
+      <a-entity portal="destino: 0 0 0; cielo: #cielo-lobby; rotacionCielo: 0 180 0; titulo: VOLVER AL LOBBY; preview: #prev-lobby"
+                position="4.6 0 1.4" rotation="0 -90 0"></a-entity>
     </a-entity>
 
-    <!-- HOTSPOT: sala de control -> panorama de crecimiento -->
-    <a-entity position="-3.2 0 -0.5">
-      <a-circle class="clickable" teletransporte="destino: -12 0 0; cielo: #cielo-panorama"
-                rotation="-90 0 0" position="0 0.02 0" radius="0.5"
-                color="#7dffb0" opacity="0.35"
-                material="shader: flat; side: double"></a-circle>
-      <a-ring rotation="-90 0 0" position="0 0.03 0"
-              radius-inner="0.42" radius-outer="0.5" color="#7dffb0"
-              material="shader: flat"
-              animation="property: scale; from: 1 1 1; to: 1.18 1.18 1.18; dir: alternate; loop: true; dur: 1200"></a-ring>
-      <a-text font="assets/fonts/Roboto-msdf.json" value="PANORAMA DE\nCRECIMIENTO" position="0 1.15 0" rotation="0 90 0"
-              align="center" color="#7dffb0" width="3"></a-text>
+    <!-- ============ OFICINA AGENTES DE IA (centro 60 0 0) ============ -->
+    <a-entity position="60 0 0">
+      <a-plane width="8" height="1.3" position="0 3.9 -5" color="#133445"
+               material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="OFICINA AGENTES DE IA"
+              position="0 4.1 -4.95" align="center" color="#5fd87a" width="7"></a-text>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="Automatizacion inteligente que trabaja 24/7"
+              position="0 3.65 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
+
+      <!-- Consola de agentes en vivo -->
+      <a-entity position="0 0 -4.6">
+        <a-plane width="3.6" height="2.3" position="0 2 -0.02" color="#133445"
+                 material="shader: flat"></a-plane>
+        <a-plane terminal-codigo="guion: agentes" width="3.4" height="2.12"
+                 position="0 2 0" material="shader: flat"></a-plane>
+        <a-box width="0.5" height="0.85" depth="0.18" position="0 0.42 -0.05"
+               color="#133445"></a-box>
+      </a-entity>
+
+      <!-- Placas de servicio a los lados -->
+      <a-entity position="-3.4 0 -2.6" rotation="0 45 0">
+        <a-plane width="3" height="1.15" position="0 1.95 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.88"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Agentes que responden clientes,\nclasifican correos y ejecutan procesos\nmientras tu equipo descansa."
+                position="0 1.95 0.01" align="center" color="#c8dcec" width="2.7"></a-text>
+      </a-entity>
+      <a-entity position="3.4 0 -2.6" rotation="0 -45 0">
+        <a-plane width="3" height="1.15" position="0 1.95 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.88"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Conectados a tus sistemas:\nCRM, correo, WhatsApp, ERP.\nSiempre supervisados por humanos."
+                position="0 1.95 0.01" align="center" color="#c8dcec" width="2.7"></a-text>
+      </a-entity>
+
+      <a-entity portal="destino: 0 0 0; cielo: #cielo-lobby; rotacionCielo: 0 180 0; titulo: VOLVER AL LOBBY; preview: #prev-lobby"
+                position="0 0 4.5" rotation="0 180 0"></a-entity>
     </a-entity>
 
-    <!-- ============ ZONA 3: PANORAMA DE CRECIMIENTO (centro en x=-12) ============ -->
-    <a-entity position="-12 0 0">
-      <a-text font="assets/fonts/Roboto-msdf.json" value="PANORAMA DE CRECIMIENTO" position="0 3.6 -4" align="center"
-              color="#7dffb0" width="8"></a-text>
+    <!-- ============ OFICINA PLATAFORMAS WEB (centro 0 0 -60) ============ -->
+    <a-entity position="0 0 -60">
+      <a-plane width="8" height="1.3" position="0 3.9 -5" color="#133445"
+               material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="OFICINA PLATAFORMAS WEB Y ENTORNOS"
+              position="0 4.1 -4.95" align="center" color="#5fd87a" width="7"></a-text>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="Apps, portales y experiencias inmersivas"
+              position="0 3.65 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
 
-      <!-- línea de tiempo: 3 estelas, la empresa evoluciona de izquierda a derecha -->
-      <!-- HOY -->
+      <!-- 3 tarjetas de servicio -->
+      <a-entity position="-2.29 0 -3.28" rotation="0 35 0">
+        <a-plane width="2.5" height="1.6" position="0 1.9 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.9"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json" value="PLATAFORMAS WEB"
+                position="0 2.35 0.01" align="center" color="#5fd87a" width="2.3"></a-text>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Aplicaciones y dashboards\na la medida de tu operacion."
+                position="0 1.7 0.01" align="center" color="#c8dcec" width="2.2"></a-text>
+      </a-entity>
+      <a-entity position="0 0 -4">
+        <a-plane width="2.5" height="1.6" position="0 1.9 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.9"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json" value="E-COMMERCE Y PORTALES"
+                position="0 2.35 0.01" align="center" color="#5fd87a" width="2.3"></a-text>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Vende y atiende en linea\ncon datos en tiempo real."
+                position="0 1.7 0.01" align="center" color="#c8dcec" width="2.2"></a-text>
+      </a-entity>
+      <a-entity position="2.29 0 -3.28" rotation="0 -35 0">
+        <a-plane width="2.5" height="1.6" position="0 1.9 0" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.9"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json" value="ENTORNOS INMERSIVOS"
+                position="0 2.35 0.01" align="center" color="#5fd87a" width="2.3"></a-text>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Experiencias VR como esta.\nEste recorrido lo construyo DataLab UM."
+                position="0 1.7 0.01" align="center" color="#c8dcec" width="2.2"></a-text>
+      </a-entity>
+
+      <a-entity portal="destino: 0 0 0; cielo: #cielo-lobby; rotacionCielo: 0 180 0; titulo: VOLVER AL LOBBY; preview: #prev-lobby"
+                position="0 0 4.5" rotation="0 180 0"></a-entity>
+    </a-entity>
+
+    <!-- ============ PANORAMA DE CRECIMIENTO (centro 0 0 60) ============ -->
+    <a-entity position="0 0 60">
+      <a-plane width="8" height="1.3" position="0 3.9 -5" color="#133445"
+               material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="PANORAMA DE CRECIMIENTO"
+              position="0 4.1 -4.95" align="center" color="#5fd87a" width="7"></a-text>
+      <a-text font="assets/fonts/Roboto-msdf.json" value="Asi evoluciona una empresa que decide con datos"
+              position="0 3.65 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
+
+      <!-- linea de tiempo: 3 estelas -->
       <a-entity position="-2.6 0 -3.5">
         <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
         <a-box width="0.5" height="0.8" depth="0.5" position="0 0.65 0" color="#3a5a74" material="transparent: true"
@@ -98,7 +226,6 @@
         <a-text font="assets/fonts/Roboto-msdf.json" value="HOY\nDecisiones a ciegas" position="0 1.7 0" align="center"
                 color="#8aa4b8" width="2.6"></a-text>
       </a-entity>
-      <!-- CON DATOS -->
       <a-entity position="0 0 -3.5">
         <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
         <a-box width="0.5" height="1.6" depth="0.5" position="0 1.05 0" color="#1990b8" material="transparent: true"
@@ -106,7 +233,6 @@
         <a-text font="assets/fonts/Roboto-msdf.json" value="CON DATOS\nDecisiones informadas" position="0 2.5 0" align="center"
                 color="#5fd87a" width="2.6"></a-text>
       </a-entity>
-      <!-- EVOLUCIONADA -->
       <a-entity position="2.6 0 -3.5">
         <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
         <a-box width="0.5" height="2.6" depth="0.5" position="0 1.55 0" color="#2ec98a" material="transparent: true"
@@ -115,7 +241,7 @@
                 color="#7dffb0" width="2.6"></a-text>
       </a-entity>
 
-      <!-- CTA de cierre, detrás de la línea de tiempo -->
+      <!-- CTA de cierre -->
       <a-plane width="5.2" height="1.5" position="0 2 -6.5" color="#133445"
                material="shader: flat"></a-plane>
       <a-text font="assets/fonts/Roboto-msdf.json" value="DATALAB UM CONSTRUYE ESTO" position="0 2.45 -6.45" align="center"
@@ -125,26 +251,15 @@
       <a-text font="assets/fonts/Roboto-msdf.json" value="Pregunta por tus 30 minutos de asesoria gratuita"
               position="0 1.55 -6.45" align="center" color="#8aa4b8" width="4.4"></a-text>
 
-      <!-- HOTSPOT: volver a la sala de control -->
-      <a-entity position="3.2 0 0.5">
-        <a-circle class="clickable" teletransporte="destino: 0 0 0; cielo: #cielo-sala"
-                  rotation="-90 0 0" position="0 0.02 0" radius="0.5"
-                  color="#5fd87a" opacity="0.35"
-                  material="shader: flat; side: double"></a-circle>
-        <a-ring rotation="-90 0 0" position="0 0.03 0"
-                radius-inner="0.42" radius-outer="0.5" color="#5fd87a"
-                material="shader: flat"
-                animation="property: scale; from: 1 1 1; to: 1.18 1.18 1.18; dir: alternate; loop: true; dur: 1200"></a-ring>
-        <a-text font="assets/fonts/Roboto-msdf.json" value="VOLVER A LA\nSALA DE CONTROL" position="0 1.15 0" rotation="0 -90 0"
-                align="center" color="#5fd87a" width="3"></a-text>
-      </a-entity>
+      <a-entity portal="destino: 0 0 0; cielo: #cielo-lobby; rotacionCielo: 0 180 0; titulo: VOLVER AL LOBBY; preview: #prev-lobby"
+                position="3.8 0 0" rotation="0 -90 0"></a-entity>
     </a-entity>
 
-    <!-- Cámara con rig teletransportable. Cursor con fuse: mirar 1.5s = clic (sin controles) -->
+    <!-- Camara con rig. Cursor con fuse: mirar 1.5s = clic (sin controles) -->
     <a-entity id="rig" position="0 0 0">
       <a-entity camera look-controls wasd-controls position="0 1.6 0">
         <a-cursor color="#5fd87a" fuse="true" fuse-timeout="1500"
-                  raycaster="objects: .clickable; far: 25"
+                  raycaster="objects: .clickable, .apuntable; far: 30"
                   animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.4 0.4 0.4; dur: 1500"
                   animation__reset="property: scale; startEvents: mouseleave, click; to: 1 1 1; dur: 150"></a-cursor>
       </a-entity>
