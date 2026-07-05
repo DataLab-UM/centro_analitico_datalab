@@ -1,13 +1,27 @@
 /*
  * guia.js — robot-guia "DATO": asistente que presenta cada zona.
- * Burbuja con texto máquina-de-escribir + voz sintetizada natural (si el
- * navegador la soporta, offline). Siempre mira al visitante; reinicia su
- * discurso cuando el visitante llega a su zona.
- * Uso: <a-entity robot-guia="mensajes: Hola!|Segundo mensaje|..." position="..."></a-entity>
+ *
+ * Voz: prefiere audios pregrabados con voz neural (assets/voz/<hash>.mp3,
+ * generados con tools/genera_voces.py); si no existen, cae al sintetizador
+ * del navegador. La burbuja escribe el texto tipo máquina de escribir.
+ *
+ * Comportamiento: el discurso se dice UNA vez por visita a la zona. Con
+ * `unaVez: true` (lobby) la introducción completa suena solo la primera
+ * vez; en visitas siguientes se dice el mensaje corto `regreso`. El botón
+ * REPETIR siempre vuelve a dar el discurso completo.
  */
 (function () {
 
-  // ---- voz: masculina, natural y latina/neutra si está disponible ----
+  // hash djb2 (igual en tools/genera_voces.py) para nombrar los audios
+  function djb2(txt) {
+    let h = 5381;
+    for (let i = 0; i < txt.length; i++) {
+      h = ((h * 33) ^ txt.charCodeAt(i)) >>> 0;
+    }
+    return h.toString(16);
+  }
+
+  // ---- respaldo: voz del navegador (masculina, natural, latina si hay) ----
   let VOZ = null;
   const HOMBRE = /jorge|alvaro|álvaro|gonzalo|alonso|raul|raúl|pablo|diego|andres|andrés|carlos|emilio|enrique|juan|luis|miguel|tomas|tomás|dario|darío|\bmale\b/i;
   function elegirVoz() {
@@ -34,7 +48,8 @@
     window.speechSynthesis.addEventListener('voiceschanged', elegirVoz);
   }
 
-  // lo que se escribe no siempre es lo que se debe decir
+  // lo que se escribe no siempre es lo que se debe decir (solo respaldo;
+  // los MP3 se generan ya con estas correcciones aplicadas)
   const PRONUNCIA = [
     [/24\/7/g, 'veinticuatro siete'],
     [/\bIA\b/g, 'i a'],
@@ -50,29 +65,45 @@
   AFRAME.registerComponent('robot-guia', {
     schema: {
       mensajes: { default: '' },   // mensajes separados por |
-      nombre: { default: 'DATO — guia virtual' }
+      nombre: { default: 'DATO — guia virtual' },
+      unaVez: { default: false },  // introduccion completa solo la primera vez
+      regreso: { default: '' }     // mensaje corto para las visitas siguientes
     },
 
     init: function () {
       this.lista = this.data.mensajes.split('|').map(s => s.trim()).filter(Boolean);
+      this.actual = this.lista;    // lo que se está narrando ahora
       this.idx = 0;
       this.col = 0;
       this.esperaHasta = 0;
       this.cerca = false;
-      this.terminado = false;   // el discurso se dice UNA vez, no en bucle
+      this.terminado = false;
+      this.haVisto = false;        // ya escuchó la introducción completa
+      this.audioSonando = false;
+      this.audioActual = null;
       this.construir();
       this.intervalo = setInterval(() => this.paso(), 40);
     },
 
-    reiniciar: function () {
+    remove: function () {
+      clearInterval(this.intervalo);
+      this.callar();
+    },
+
+    callar: function () {
+      if (this.audioActual) { this.audioActual.pause(); this.audioActual = null; }
+      this.audioSonando = false;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    },
+
+    reiniciarCon: function (mensajes) {
+      this.callar();
+      this.actual = mensajes;
       this.idx = 0;
       this.col = 0;
       this.esperaHasta = 0;
       this.terminado = false;
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     },
-
-    remove: function () { clearInterval(this.intervalo); },
 
     construir: function () {
       const el = this.el;
@@ -86,29 +117,21 @@
 
       // dron estilo cápsula: cabeza redondeada + visor oscuro + cuerpo huevo
       const partes = [
-        // cabeza
         ['a-sphere',   { radius: 0.19, position: '0 1.52 0', scale: '1 0.85 1', color: '#eef4f8' }],
-        // visor oscuro embebido en la cara
         ['a-sphere',   { radius: 0.155, position: '0 1.52 0.055', scale: '1 0.68 0.8', color: '#0a1420' }],
-        // ojos verdes con brillo
         ['a-sphere',   { radius: 0.028, position: '-0.055 1.54 0.185', color: '#5fd87a', material: 'shader: flat' }],
         ['a-sphere',   { radius: 0.028, position: '0.055 1.54 0.185', color: '#5fd87a', material: 'shader: flat' }],
         ['a-sphere',   { radius: 0.009, position: '-0.048 1.548 0.208', color: '#ffffff', material: 'shader: flat' }],
         ['a-sphere',   { radius: 0.009, position: '0.062 1.548 0.208', color: '#ffffff', material: 'shader: flat' }],
-        // cuello
         ['a-cylinder', { radius: 0.05, height: 0.08, position: '0 1.38 0', color: '#c8d6e2' }],
-        // torso tipo cápsula
         ['a-sphere',   { radius: 0.24, position: '0 1.05 0', scale: '0.85 1.2 0.7', color: '#eef4f8' }],
-        // placa de pecho
         ['a-circle',   { radius: 0.1, position: '0 1.14 0.17', color: '#133445', material: 'shader: flat' }],
-        // hombros y brazos colgantes
         ['a-sphere',   { radius: 0.055, position: '-0.225 1.22 0', color: '#c8d6e2' }],
         ['a-sphere',   { radius: 0.055, position: '0.225 1.22 0', color: '#c8d6e2' }],
         ['a-cylinder', { radius: 0.026, height: 0.28, position: '-0.26 1.05 0', rotation: '0 0 10', color: '#dfe9f0' }],
         ['a-cylinder', { radius: 0.026, height: 0.28, position: '0.26 1.05 0', rotation: '0 0 -10', color: '#dfe9f0' }],
         ['a-sphere',   { radius: 0.038, position: '-0.285 0.9 0', color: '#c8d6e2' }],
         ['a-sphere',   { radius: 0.038, position: '0.285 0.9 0', color: '#c8d6e2' }],
-        // anillo propulsor bajo el torso
         ['a-torus',    { radius: 0.13, 'radius-tubular': 0.02, position: '0 0.68 0', rotation: '-90 0 0', color: '#133445' }],
       ];
       partes.forEach(([tag, attrs]) => {
@@ -117,7 +140,6 @@
         cuerpo.appendChild(p);
       });
 
-      // resplandor del propulsor (pulsa)
       const chorro = document.createElement('a-circle');
       chorro.setAttribute('radius', 0.1);
       chorro.setAttribute('position', '0 0.66 0');
@@ -128,7 +150,6 @@
         'property: components.material.material.opacity; from: 0.25; to: 0.65; dir: alternate; loop: true; dur: 700');
       cuerpo.appendChild(chorro);
 
-      // logo DataLab en el pecho
       const pecho = document.createElement('a-image');
       pecho.setAttribute('src', '#logo');
       pecho.setAttribute('width', 0.15);
@@ -136,7 +157,6 @@
       pecho.setAttribute('position', '0 1.14 0.175');
       cuerpo.appendChild(pecho);
 
-      // sombra suave en el piso (ancla visual del vuelo)
       const sombra = document.createElement('a-circle');
       sombra.setAttribute('radius', 0.26);
       sombra.setAttribute('rotation', '-90 0 0');
@@ -173,7 +193,7 @@
       this.texto.setAttribute('position', '0 2.34 0.01');
       el.appendChild(this.texto);
 
-      // botón REPETIR sobre la burbuja: vuelve a dar la explicación
+      // botón REPETIR sobre la burbuja: vuelve a dar la explicación completa
       const boton = document.createElement('a-plane');
       boton.setAttribute('width', 0.72);
       boton.setAttribute('height', 0.24);
@@ -202,23 +222,24 @@
 
       boton.addEventListener('mouseenter', () => boton.setAttribute('color', '#1d4a63'));
       boton.addEventListener('mouseleave', () => boton.setAttribute('color', '#133445'));
-      boton.addEventListener('click', () => this.reiniciar());
+      boton.addEventListener('click', () => this.reiniciarCon(this.lista));
     },
 
     paso: function () {
-      if (!this.lista.length || this.terminado) return;
+      if (!this.actual.length || this.terminado) return;
       const ahora = performance.now();
-      const msg = this.lista[this.idx];
+      const msg = this.actual[this.idx];
 
       if (this.col === 0 && ahora >= this.esperaHasta) this.hablar(msg);
 
       if (this.col < msg.length) {
         this.col += 2; // velocidad de escritura
         this.texto.setAttribute('value', msg.slice(0, this.col));
-        if (this.col >= msg.length) this.esperaHasta = ahora + 4200; // pausa de lectura
-      } else if (ahora >= this.esperaHasta) {
-        if (this.idx + 1 >= this.lista.length) {
-          this.terminado = true;  // fin: queda el último mensaje visible, sin bucle
+        if (this.col >= msg.length) this.esperaHasta = ahora + 4200; // respaldo si no hay audio
+      } else if (ahora >= this.esperaHasta && !this.audioSonando) {
+        if (this.idx + 1 >= this.actual.length) {
+          this.terminado = true;   // fin: sin bucle
+          this.haVisto = true;
         } else {
           this.idx++;
           this.col = 0;
@@ -227,16 +248,39 @@
     },
 
     hablar: function (msg) {
-      // habla solo si el visitante está en esta zona (evita 5 robots a coro)
-      if (!this.cerca || !('speechSynthesis' in window)) return;
-      try {
-        const u = new SpeechSynthesisUtterance(pronunciable(msg));
-        if (VOZ) u.voice = VOZ;
-        u.lang = VOZ ? VOZ.lang : 'es-US';
-        u.rate = 1.18;  // ágil, sin arrastrarse
-        u.pitch = 1.0;  // tono neutro, sin agudo robótico
-        window.speechSynthesis.speak(u);
-      } catch (e) { /* sin voz: la burbuja basta */ }
+      if (!this.cerca) return;
+      this.callar();
+
+      // 1) audio pregrabado con voz neural (generado por tools/genera_voces.py)
+      const audio = new Audio('assets/voz/' + djb2(msg) + '.mp3');
+      this.audioActual = audio;
+      this.audioSonando = true;
+      audio.addEventListener('ended', () => {
+        this.audioSonando = false;
+        this.esperaHasta = performance.now() + 700;
+      });
+      audio.addEventListener('error', () => { this.audioSonando = false; });
+      audio.play().then(() => {
+        // sonando: el avance del discurso espera al final del audio
+      }).catch(() => {
+        // 2) respaldo: sintetizador del navegador
+        this.audioSonando = false;
+        if (!('speechSynthesis' in window)) return;
+        try {
+          const u = new SpeechSynthesisUtterance(pronunciable(msg));
+          if (VOZ) u.voice = VOZ;
+          u.lang = VOZ ? VOZ.lang : 'es-US';
+          u.rate = 1.18;
+          u.pitch = 1.0;
+          this.audioSonando = true;
+          u.onend = () => {
+            this.audioSonando = false;
+            this.esperaHasta = performance.now() + 700;
+          };
+          u.onerror = () => { this.audioSonando = false; };
+          window.speechSynthesis.speak(u);
+        } catch (e) { this.audioSonando = false; }
+      });
     },
 
     tick: function (t) {
@@ -253,14 +297,17 @@
       const dx = posCam.x - pos.x, dz = posCam.z - pos.z;
       this.el.object3D.rotation.y = Math.atan2(dx, dz);
 
-      // al llegar el visitante a la zona, el discurso arranca desde el saludo;
-      // al irse, se calla (y quedará listo para la próxima visita)
+      // llegadas y salidas de la zona
       const dist = Math.sqrt(dx * dx + dz * dz);
       const cercaAhora = dist < 16;
-      if (cercaAhora && !this.cerca) this.reiniciar();
-      if (!cercaAhora && this.cerca && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+      if (cercaAhora && !this.cerca) {
+        if (!this.haVisto || !this.data.unaVez) {
+          this.reiniciarCon(this.lista);            // discurso completo
+        } else if (this.data.regreso) {
+          this.reiniciarCon([this.data.regreso]);   // solo el saludo corto
+        }
       }
+      if (!cercaAhora && this.cerca) this.callar();  // se fue: silencio
       this.cerca = cercaAhora;
     }
   });
