@@ -7,15 +7,21 @@
  */
 (function () {
 
-  // ---- voz: elegir la más natural disponible, preferencia latino/neutro ----
+  // ---- voz: masculina, natural y latina/neutra si está disponible ----
   let VOZ = null;
+  const HOMBRE = /jorge|alvaro|álvaro|gonzalo|alonso|raul|raúl|pablo|diego|andres|andrés|carlos|emilio|enrique|juan|luis|miguel|tomas|tomás|dario|darío|\bmale\b/i;
   function elegirVoz() {
     if (!('speechSynthesis' in window)) return;
     const voces = window.speechSynthesis.getVoices();
+    const latino = (v) => /es[-_](US|419|MX|CO|AR|CL)/i.test(v.lang);
+    const natural = (v) => /natural|neural|google/i.test(v.name);
     const criterios = [
-      (v) => /es[-_](US|419|MX|CO)/i.test(v.lang) && /natural|neural|google/i.test(v.name),
-      (v) => /es[-_](US|419|MX|CO)/i.test(v.lang),
-      (v) => /^es/i.test(v.lang) && /natural|neural|google/i.test(v.name),
+      (v) => latino(v) && HOMBRE.test(v.name) && natural(v),
+      (v) => /^es/i.test(v.lang) && HOMBRE.test(v.name) && natural(v),
+      (v) => /^es/i.test(v.lang) && HOMBRE.test(v.name),
+      (v) => latino(v) && natural(v),
+      (v) => latino(v),
+      (v) => /^es/i.test(v.lang) && natural(v),
       (v) => /^es/i.test(v.lang)
     ];
     for (const ok of criterios) {
@@ -53,8 +59,17 @@
       this.col = 0;
       this.esperaHasta = 0;
       this.cerca = false;
+      this.terminado = false;   // el discurso se dice UNA vez, no en bucle
       this.construir();
       this.intervalo = setInterval(() => this.paso(), 40);
+    },
+
+    reiniciar: function () {
+      this.idx = 0;
+      this.col = 0;
+      this.esperaHasta = 0;
+      this.terminado = false;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     },
 
     remove: function () { clearInterval(this.intervalo); },
@@ -157,10 +172,41 @@
       this.texto.setAttribute('wrap-count', 34);
       this.texto.setAttribute('position', '0 2.34 0.01');
       el.appendChild(this.texto);
+
+      // botón REPETIR sobre la burbuja: vuelve a dar la explicación
+      const boton = document.createElement('a-plane');
+      boton.setAttribute('width', 0.72);
+      boton.setAttribute('height', 0.24);
+      boton.setAttribute('position', '0 3.05 0');
+      boton.setAttribute('color', '#133445');
+      boton.setAttribute('material', 'shader: flat');
+      boton.classList.add('clickable');
+      el.appendChild(boton);
+
+      const bordeBoton = document.createElement('a-plane');
+      bordeBoton.setAttribute('width', 0.78);
+      bordeBoton.setAttribute('height', 0.3);
+      bordeBoton.setAttribute('position', '0 3.05 -0.005');
+      bordeBoton.setAttribute('color', '#5fd87a');
+      bordeBoton.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.35');
+      el.appendChild(bordeBoton);
+
+      const textoBoton = document.createElement('a-text');
+      textoBoton.setAttribute('font', FUENTE);
+      textoBoton.setAttribute('value', 'REPETIR');
+      textoBoton.setAttribute('align', 'center');
+      textoBoton.setAttribute('color', '#5fd87a');
+      textoBoton.setAttribute('width', 1.3);
+      textoBoton.setAttribute('position', '0 3.05 0.01');
+      el.appendChild(textoBoton);
+
+      boton.addEventListener('mouseenter', () => boton.setAttribute('color', '#1d4a63'));
+      boton.addEventListener('mouseleave', () => boton.setAttribute('color', '#133445'));
+      boton.addEventListener('click', () => this.reiniciar());
     },
 
     paso: function () {
-      if (!this.lista.length) return;
+      if (!this.lista.length || this.terminado) return;
       const ahora = performance.now();
       const msg = this.lista[this.idx];
 
@@ -171,8 +217,12 @@
         this.texto.setAttribute('value', msg.slice(0, this.col));
         if (this.col >= msg.length) this.esperaHasta = ahora + 4200; // pausa de lectura
       } else if (ahora >= this.esperaHasta) {
-        this.idx = (this.idx + 1) % this.lista.length;
-        this.col = 0;
+        if (this.idx + 1 >= this.lista.length) {
+          this.terminado = true;  // fin: queda el último mensaje visible, sin bucle
+        } else {
+          this.idx++;
+          this.col = 0;
+        }
       }
     },
 
@@ -183,7 +233,7 @@
         const u = new SpeechSynthesisUtterance(pronunciable(msg));
         if (VOZ) u.voice = VOZ;
         u.lang = VOZ ? VOZ.lang : 'es-US';
-        u.rate = 1.0;   // ritmo natural
+        u.rate = 1.18;  // ágil, sin arrastrarse
         u.pitch = 1.0;  // tono neutro, sin agudo robótico
         window.speechSynthesis.speak(u);
       } catch (e) { /* sin voz: la burbuja basta */ }
@@ -203,14 +253,13 @@
       const dx = posCam.x - pos.x, dz = posCam.z - pos.z;
       this.el.object3D.rotation.y = Math.atan2(dx, dz);
 
-      // al llegar el visitante a la zona, reinicia el discurso desde el saludo
+      // al llegar el visitante a la zona, el discurso arranca desde el saludo;
+      // al irse, se calla (y quedará listo para la próxima visita)
       const dist = Math.sqrt(dx * dx + dz * dz);
       const cercaAhora = dist < 16;
-      if (cercaAhora && !this.cerca) {
-        this.idx = 0;
-        this.col = 0;
-        this.esperaHasta = 0;
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (cercaAhora && !this.cerca) this.reiniciar();
+      if (!cercaAhora && this.cerca && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
       }
       this.cerca = cercaAhora;
     }
