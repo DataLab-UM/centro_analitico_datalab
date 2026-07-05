@@ -108,14 +108,25 @@
 
     prediccion: {
       intervalo: 4000,
+      // rangos filtrables desde los botones 3D de la oficina
+      RANGOS: {
+        semanas: { ejes: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10'], escala: 1 },
+        meses:   { ejes: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'], escala: 1.6 },
+        anios:   { ejes: ['2022','2023','2024','2025','2026'], escala: 3.2 }
+      },
+      generar: function (estado) {
+        const r = this.RANGOS[estado.rango];
+        return Datos.proyeccion(r.ejes.length).map((v) => Math.round(v * r.escala));
+      },
       crear: function (chart) {
-        const barras = Datos.proyeccion(10);
+        const estado = { rango: 'semanas' };
+        const barras = this.generar(estado);
         chart.setOption({
           backgroundColor: FONDO,
           title: titulo('PREDICCIÓN DE CRECIMIENTO'),
           grid: { left: 80, right: 40, top: 120, bottom: 60 },
           xAxis: { type: 'category', axisLabel: EJE.axisLabel,
-                   data: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10'] },
+                   data: this.RANGOS[estado.rango].ejes },
           yAxis: Object.assign({ type: 'value' }, EJE),
           series: [
             { type: 'bar', data: barras, barWidth: '55%',
@@ -127,13 +138,22 @@
               lineStyle: { color: AZUL, width: 3, type: 'dashed' } }
           ]
         });
-        return {};
+        return estado;
       },
-      actualizar: function (chart) {
-        const barras = Datos.proyeccion(10);
+      actualizar: function (chart, estado) {
+        const barras = this.generar(estado);
         // la transición animada de ECharts hace crecer las barras: efecto "vivo"
         chart.setOption({ series: [{ data: barras },
                                    { data: barras.map((v) => v + 8) }] });
+      },
+      filtrar: function (chart, estado, rango) {
+        if (!this.RANGOS[rango]) return;
+        estado.rango = rango;
+        const barras = this.generar(estado);
+        chart.setOption({
+          xAxis: { data: this.RANGOS[rango].ejes },
+          series: [{ data: barras }, { data: barras.map((v) => v + 8) }]
+        });
       }
     }
   };
@@ -149,6 +169,11 @@
       this.chart = echarts.init(this.canvas, null,
         { renderer: 'canvas', width: 1024, height: 576 });
       const estado = def.crear(this.chart);
+
+      // los botones 3D pueden filtrar este panel emitiendo 'filtro'
+      this.el.addEventListener('filtro', (e) => {
+        if (def.filtrar) def.filtrar(this.chart, estado, e.detail.dato);
+      });
 
       this.el.addEventListener('loaded', () => {
         const mesh = this.el.getObject3D('mesh');

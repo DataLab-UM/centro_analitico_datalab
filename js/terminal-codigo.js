@@ -70,6 +70,15 @@
           { t: '>>> satisfacción estimada: 96%', c: VERDE, instantanea: true, pausa: 600 },
           { t: '>>> escalamiento a humano: solo casos complejos ✓', c: CIAN, instantanea: true, pausa: 700 },
           { t: '✓ agente listo para producción', c: VERDE, instantanea: true, pausa: 2600 }
+        ],
+        [
+          { t: '# orden recibida: clasificar bandeja de correos', c: GRIS },
+          { t: 'bandeja = correo.sin_leer()', c: BLANCO, pausa: 500 },
+          { t: '>>> 48 mensajes sin leer encontrados', c: AMBAR, instantanea: true, pausa: 600 },
+          { t: 'agente.clasificar(bandeja, por=["intención", "urgencia"])', c: BLANCO, pausa: 800 },
+          { t: '>>> 12 ventas | 9 soporte | 5 urgentes | 22 informativos', c: CIAN, instantanea: true, pausa: 700 },
+          { t: '>>> urgentes asignados al equipo humano ✓', c: VERDE, instantanea: true, pausa: 600 },
+          { t: '✓ bandeja organizada en 41 segundos', c: VERDE, instantanea: true, pausa: 2600 }
         ]
       ]
     }
@@ -104,6 +113,16 @@
       });
 
       this.intervalo = setInterval(() => this.paso(), 50); // 20 fps
+
+      // los botones 3D pueden ordenar un guion concreto emitiendo 'ejecutar'
+      this.el.addEventListener('ejecutar', (e) => {
+        const i = parseInt(e.detail.dato, 10) || 0;
+        this.guion = i % this.set.scripts.length;
+        this.linea = 0;
+        this.col = 0;
+        this.hechas = [];
+        this.esperaHasta = performance.now() + 400;
+      });
     },
 
     remove: function () { clearInterval(this.intervalo); },
