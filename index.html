@@ -14,6 +14,7 @@
   <script src="js/interaccion.js"></script>
   <script src="js/botones.js"></script>
   <script src="js/guia.js"></script>
+  <script src="js/ambiente.js"></script>
 </head>
 <body>
   <a-scene>
@@ -44,15 +45,12 @@
             value="Tecnologia que inspira confianza — mira un portal para entrar a cada oficina"
             position="0.4 2.82 -5.15" align="center" color="#c8dcec" width="4.6"></a-text>
 
-    <!-- Nucleo decorativo elevado -->
-    <a-entity position="0 4.8 -7">
-      <a-torus radius="0.55" radius-tubular="0.006" color="#5fd87a" opacity="0.6"
-               animation="property: rotation; to: 360 360 0; loop: true; dur: 14000; easing: linear"></a-torus>
-      <a-torus radius="0.4" radius-tubular="0.006" color="#7dffb0" opacity="0.5"
-               animation="property: rotation; to: -360 0 360; loop: true; dur: 10000; easing: linear"></a-torus>
-      <a-sphere radius="0.12" color="#5fd87a" opacity="0.9"
-                animation="property: scale; from: 1 1 1; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 1500"></a-sphere>
-    </a-entity>
+    <!-- Holograma del logo DataLab girando sobre el lobby -->
+    <a-entity holo-logo position="0 4.7 -7"></a-entity>
+
+    <!-- Vida ambiental: particulas de datos + pulsos de luz en el piso -->
+    <a-entity particulas="cantidad: 160; color: #5fd87a; radio: 11; alto: 7"></a-entity>
+    <a-entity pulso-piso="color: #5fd87a; radioMax: 4.5" position="0 0.03 -4.5"></a-entity>
 
     <!-- Portales a las oficinas (arco de radio 6) -->
     <a-entity portal="destino: -60 0 0; cielo: #cielo-bi; titulo: BUSINESS INTELLIGENCE; preview: #prev-bi"
@@ -142,6 +140,9 @@
       <a-entity robot-guia="mensajes: Bienvenido a Business Intelligence.|Cada tablero muestra tu negocio en vivo: ventas, clientes, salud operativa y predicciones.|Apunta un tablero para resaltarlo. Y prueba los botones bajo la prediccion para cambiar el rango.|Al fondo, nuestro equipo desarrollando en tiempo real.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
                 position="2.9 0 -2.0"></a-entity>
 
+      <!-- Vida ambiental -->
+      <a-entity particulas="cantidad: 100; color: #4dd8ff; radio: 13; alto: 7; velocidad: 0.18"></a-entity>
+
       <a-entity portal="destino: 0 0 0; cielo: #cielo-lobby; rotacionCielo: 0 180 0; titulo: VOLVER AL LOBBY; preview: #prev-lobby"
                 position="4.6 0 1.4" rotation="0 -90 0"></a-entity>
     </a-entity>
@@ -180,6 +181,10 @@
       <!-- DATO explica la oficina -->
       <a-entity robot-guia="mensajes: Esta es la oficina de Agentes de IA.|Aqui trabajan agentes 24/7: responden clientes, cotizan y clasifican correos.|Dale una orden con los botones y mira la consola ejecutarla en vivo.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
                 position="-2.9 0 -2.2"></a-entity>
+
+      <!-- Vida ambiental: particulas moradas a tono con el laboratorio -->
+      <a-entity particulas="cantidad: 140; color: #b48cff; radio: 12; alto: 7; velocidad: 0.3"></a-entity>
+      <a-entity pulso-piso="color: #b48cff; radioMax: 3.5" position="0 0.03 -4.6"></a-entity>
 
       <!-- Placas de servicio a los lados -->
       <a-entity position="-3.4 0 -2.6" rotation="0 45 0">
@@ -243,6 +248,9 @@
       <a-entity robot-guia="mensajes: Aqui creamos plataformas web y entornos inmersivos.|Apps, e-commerce y dashboards a la medida de tu operacion.|Este recorrido VR tambien lo construimos nosotros.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
                 position="-3.2 0 -1.8"></a-entity>
 
+      <!-- Vida ambiental: particulas suaves para el estudio claro -->
+      <a-entity particulas="cantidad: 70; color: #9adcff; radio: 12; alto: 6; velocidad: 0.15"></a-entity>
+
       <a-entity portal="destino: 0 0 0; cielo: #cielo-lobby; rotacionCielo: 0 180 0; titulo: VOLVER AL LOBBY; preview: #prev-lobby"
                 position="0 0 4.5" rotation="0 180 0"></a-entity>
     </a-entity>
@@ -295,6 +303,10 @@
       <!-- DATO cierra el recorrido -->
       <a-entity robot-guia="mensajes: Asi evoluciona una empresa que decide con datos.|De decisiones a ciegas, a predecir y crecer.|Te regalamos 30 minutos de asesoria: pregunta por ellos al salir.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
                 position="-3.2 0 -1.5"></a-entity>
+
+      <!-- Vida ambiental: particulas doradas del atardecer + pulso bajo el CTA -->
+      <a-entity particulas="cantidad: 110; color: #ffd27d; radio: 13; alto: 8; velocidad: 0.2"></a-entity>
+      <a-entity pulso-piso="color: #5fd87a; radioMax: 3" position="0 0.03 -6.5"></a-entity>
     </a-entity>
 
     <!-- Camara con rig. Cursor con fuse: mirar 1.5s = clic (sin controles) -->
