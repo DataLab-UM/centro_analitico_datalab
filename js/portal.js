@@ -10,6 +10,7 @@ AFRAME.registerComponent('portal', {
   schema: {
     destino: { type: 'vec3' },
     cielo: { default: '' },          // selector del <img> del skybox destino
+    video: { default: '' },          // selector del <video> 360 (fondo animado)
     rotacionCielo: { default: '0 0 0' },
     titulo: { default: '' },
     preview: { default: '' }         // selector del <img> de la miniatura
@@ -74,9 +75,27 @@ AFRAME.registerComponent('portal', {
     el.addEventListener('click', () => {
       const d = this.data.destino;
       document.querySelector('#rig').setAttribute('position', d.x + ' ' + d.y + ' ' + d.z);
+
       const cielo = document.querySelector('a-sky');
-      if (this.data.cielo) cielo.setAttribute('src', this.data.cielo);
-      cielo.setAttribute('rotation', this.data.rotacionCielo);
+      const esfera = document.querySelector('#esfera-video');
+      // pausar cualquier fondo animado previo
+      document.querySelectorAll('a-assets video').forEach((v) => v.pause());
+
+      if (this.data.video && esfera) {
+        // zona con fondo animado (video 360)
+        const vid = document.querySelector(this.data.video);
+        esfera.setAttribute('src', this.data.video);
+        esfera.setAttribute('rotation', this.data.rotacionCielo);
+        esfera.setAttribute('visible', 'true');
+        cielo.setAttribute('visible', 'false');
+        if (vid) { vid.currentTime = 0; vid.play().catch(() => {}); }
+      } else {
+        // zona con fondo estatico
+        if (esfera) esfera.setAttribute('visible', 'false');
+        cielo.setAttribute('visible', 'true');
+        if (this.data.cielo) cielo.setAttribute('src', this.data.cielo);
+        cielo.setAttribute('rotation', this.data.rotacionCielo);
+      }
     });
   }
 });

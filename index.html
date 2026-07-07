@@ -30,9 +30,13 @@
       <img id="prev-web" src="assets/prev-web.jpg">
       <img id="prev-ciudad" src="assets/prev-ciudad.jpg">
       <img id="logo" src="assets/logo-icono.png">
+      <video id="video-bi" src="assets/videos/escena 2VR.mp4" loop="true" muted
+             crossorigin="anonymous" playsinline webkit-playsinline preload="auto"></video>
     </a-assets>
 
     <a-sky src="#cielo-lobby" rotation="0 180 0"></a-sky>
+    <!-- esfera para fondos animados (video 360 de Kling); el portal la activa -->
+    <a-videosphere id="esfera-video" src="#video-bi" visible="false"></a-videosphere>
 
     <!-- ================= LOBBY / RECEPCION (origen) ================= -->
     <!-- Letrero de bienvenida -->
@@ -53,7 +57,7 @@
     <a-entity pulso-piso="color: #5fd87a; radioMax: 4.5" position="0 0.03 -4.5"></a-entity>
 
     <!-- Portales a las oficinas (arco de radio 6) -->
-    <a-entity portal="destino: -60 0 0; cielo: #cielo-bi; titulo: BUSINESS INTELLIGENCE; preview: #prev-bi"
+    <a-entity portal="destino: -60 0 0; cielo: #cielo-bi; video: #video-bi; titulo: BUSINESS INTELLIGENCE; preview: #prev-bi"
               position="-4.85 0 -3.53" rotation="0 54 0"></a-entity>
     <a-entity portal="destino: 60 0 0; cielo: #cielo-ia; titulo: AGENTES DE IA; preview: #prev-ia"
               position="-1.85 0 -5.71" rotation="0 18 0"></a-entity>
