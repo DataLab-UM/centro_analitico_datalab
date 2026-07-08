@@ -81,14 +81,14 @@ AFRAME.registerComponent('portal', {
       // pausar cualquier fondo animado previo
       document.querySelectorAll('a-assets video').forEach((v) => v.pause());
 
-      if (this.data.video && esfera) {
+      const vid = this.data.video ? document.querySelector(this.data.video) : null;
+      if (vid && !vid.error && esfera) {
         // zona con fondo animado (video 360)
-        const vid = document.querySelector(this.data.video);
         esfera.setAttribute('src', this.data.video);
         esfera.setAttribute('rotation', this.data.rotacionCielo);
         esfera.setAttribute('visible', 'true');
         cielo.setAttribute('visible', 'false');
-        if (vid) { vid.currentTime = 0; vid.play().catch(() => {}); }
+        vid.currentTime = 0; vid.play().catch(() => {});
       } else {
         // zona con fondo estatico
         if (esfera) esfera.setAttribute('visible', 'false');
@@ -97,5 +97,41 @@ AFRAME.registerComponent('portal', {
         cielo.setAttribute('rotation', this.data.rotacionCielo);
       }
     });
+  }
+});
+
+/*
+ * fondo-lobby — arranca la experiencia con el video 360 del lobby.
+ * Va en la videosphere. Si el video no existe o falla, el <a-sky>
+ * estático queda como fondo (no hace nada).
+ */
+AFRAME.registerComponent('fondo-lobby', {
+  schema: {
+    video: { default: '#video-lobby' },
+    rotacion: { default: '0 180 0' }
+  },
+
+  init: function () {
+    const esfera = this.el;
+    const vid = document.querySelector(this.data.video);
+    if (!vid) return;
+
+    const activar = () => {
+      // solo si seguimos en el lobby (el rig no se ha teletransportado)
+      const rig = document.querySelector('#rig').object3D.position;
+      if (rig.length() > 1) return;
+      esfera.setAttribute('src', this.data.video);
+      esfera.setAttribute('rotation', this.data.rotacion);
+      esfera.setAttribute('visible', 'true');
+      document.querySelector('a-sky').setAttribute('visible', 'false');
+      vid.play().catch(() => {});
+    };
+
+    if (vid.readyState >= 2) activar();
+    else vid.addEventListener('canplay', activar, { once: true });
+    // autoplay bloqueado por el navegador: reintenta al primer gesto
+    window.addEventListener('click', () => {
+      if (esfera.getAttribute('visible') && vid.paused && !vid.error) vid.play().catch(() => {});
+    }, { once: true });
   }
 });

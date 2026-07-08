@@ -1,0 +1,180 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inteligencia Artificial — DataLab UM</title>
+  <style>
+    :root { --bg:#0a1420; --surface:#133445; --fg:#c8dcec; --muted:#8aa4b8; --border:#1e3d52; --accent:#5fd87a; --purple:#b48cff; --info:#4dd8ff; --warn:#ffd27d; --danger:#ff6b6b; --shell:#050d14; }
+    * { box-sizing:border-box;margin:0;padding:0; }
+    html,body { width:100%;height:100%;overflow:hidden;background:var(--shell);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased; }
+    .scene { position:fixed;inset:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 45%,var(--bg) 0%,var(--shell) 75%); }
+    .particles { position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0; }
+    .particle { position:absolute;width:2px;height:2px;border-radius:50%;background:var(--purple);animation:float-up linear infinite;opacity:0; }
+    @keyframes float-up { 0%{transform:translateY(0) scale(0);opacity:0;} 10%{opacity:0.6;} 90%{opacity:0.1;} 100%{transform:translateY(-110vh) scale(1.5);opacity:0;} }
+    .grid-bg { position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(180,140,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(180,140,255,0.025) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse at 50% 45%,black 25%,transparent 75%); }
+    .header { position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(19,52,69,0.7) 0%,transparent 100%); }
+    .header h1 { font-size:24px;font-weight:600;letter-spacing:-0.01em; }
+    .header h1 span { color:var(--purple); }
+    .back-link { display:flex;align-items:center;gap:8px;color:var(--muted);text-decoration:none;font-size:13px;letter-spacing:0.03em;transition:color 0.2s; }
+    .back-link:hover { color:var(--purple); }
+    .back-link svg { width:16px;height:16px; }
+    .main-grid { position:relative;z-index:1;flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:20px;padding:8px 28px 28px;max-height:calc(100vh - 80px); }
+    .card { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:border-color 0.3s,box-shadow 0.3s; }
+    .card:hover { border-color:rgba(180,140,255,0.2);box-shadow:0 0 20px rgba(180,140,255,0.04); }
+    .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:14px; }
+    .card-head h3 { font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase; }
+    .status-dot { width:8px;height:8px;border-radius:50%;display:inline-block; }
+    .status-live { background:var(--purple);box-shadow:0 0 8px var(--purple);animation:pulse-dot 2s infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    .card-body { flex:1;display:flex;flex-direction:column; }
+    .agent-console { flex:1;background:var(--shell);border-radius:10px;border:1px solid var(--border);padding:14px;font-family:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;line-height:1.6;overflow:hidden; }
+    .agent-console .line { white-space:pre; }
+    .agent-console .agent { color:var(--purple); }
+    .agent-console .cmd { color:var(--accent); }
+    .agent-console .result { color:var(--muted); }
+    .agent-console .timing { color:rgba(138,164,184,0.5); }
+    .cmd-grid { display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;flex:1; }
+    .cmd-btn { background:var(--shell);border:1px solid var(--border);border-radius:12px;padding:16px 12px;color:var(--fg);cursor:pointer;font:inherit;font-size:13px;font-weight:510;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color 0.3s,background 0.3s;letter-spacing:0.02em; }
+    .cmd-btn:hover { border-color:var(--purple);background:rgba(180,140,255,0.04); }
+    .cmd-btn:active { background:rgba(180,140,255,0.08); }
+    .cmd-btn .icon { font-size:22px;width:36px;height:36px;border-radius:10px;background:rgba(180,140,255,0.1);color:var(--purple);display:grid;place-items:center; }
+    .console-feed { flex:1;background:var(--shell);border-radius:10px;border:1px solid var(--border);padding:12px;overflow-y:auto;font-size:12px;line-height:1.6; }
+    .console-feed .entry { padding:6px 10px;margin-bottom:4px;border-radius:6px;animation:slide-in 0.3s ease; }
+    @keyframes slide-in { from { opacity:0;transform:translateY(-8px); } to { opacity:1;transform:translateY(0); } }
+    .console-feed .entry.info { background:rgba(77,216,255,0.06);border-top:2px solid var(--info);color:var(--info); }
+    .console-feed .entry.ok { background:rgba(95,216,122,0.06);border-top:2px solid var(--accent);color:var(--accent); }
+    .console-feed .entry.warn { background:rgba(255,210,125,0.06);border-top:2px solid var(--warn);color:var(--warn); }
+    .console-feed .entry .time { font-family:"JetBrains Mono",monospace;font-size:10px;opacity:0.5;display:block;margin-bottom:2px; }
+    .agent-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1; }
+    .agent-card { background:var(--shell);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;transition:border-color 0.3s; }
+    .agent-card:hover { border-color:var(--purple); }
+    .agent-avatar { width:44px;height:44px;border-radius:50%;background:rgba(180,140,255,0.12);display:grid;place-items:center;font-size:20px;margin-bottom:10px;border:1.5px solid rgba(180,140,255,0.3); }
+    .agent-card .aname { font-size:13px;font-weight:600;color:var(--fg);margin-bottom:2px; }
+    .agent-card .arole { font-size:11px;color:var(--muted);letter-spacing:0.02em; }
+    .agent-card .astatus { margin-top:6px;font-size:10.5px;letter-spacing:0.04em;padding:2px 8px;border-radius:6px; }
+    .astatus.active { background:rgba(95,216,122,0.1);color:var(--accent); }
+    .astatus.thinking { background:rgba(77,216,255,0.1);color:var(--info); }
+    .astatus.idle { background:rgba(138,164,184,0.08);color:var(--muted); }
+    .señas-panel { display:flex;align-items:center;gap:20px;flex:1;justify-content:center; }
+    .señas-display { width:140px;height:140px;border-radius:50%;border:2px solid var(--purple);display:grid;place-items:center;font-size:48px;background:rgba(180,140,255,0.06);transition:transform 0.3s; }
+    .señas-display:hover { transform:scale(1.05);cursor:pointer; }
+    .señas-text { font-size:16px;font-weight:510;color:var(--fg);max-width:200px;text-align:center;line-height:1.3; }
+    .span-2 { grid-column:span 2; }
+    @media (max-width:900px) { .main-grid { grid-template-columns:1fr 1fr;grid-template-rows:auto; } .span-2 { grid-column:span 1; } }
+    @media (max-width:600px) { .main-grid { grid-template-columns:1fr;padding:8px 16px 16px; } }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="grid-bg"></div>
+    <div class="particles" id="particles"></div>
+    <header class="header" data-od-id="office-header-ia">
+      <div><h1 data-od-id="office-title-ia">Inteligencia <span>Artificial</span></h1></div>
+      <a href="index.html" class="back-link" data-od-id="back-to-lobby">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+        Volver al lobby
+      </a>
+    </header>
+    <main class="main-grid" data-od-id="office-content-ia">
+      <article class="card" data-od-id="card-agent-console">
+        <div class="card-head"><h3>Consola de agentes</h3><span class="status-dot status-live"></span></div>
+        <div class="card-body">
+          <div class="agent-console" id="agent-console">
+            <div class="line"><span class="agent">[Agente Alpha]</span> <span class="cmd">> atender cotizacion</span></div>
+            <div class="line"><span class="result">  Buscando en base de conocimiento RAG...</span></div>
+            <div class="line"><span class="result">  Generando respuesta con LLM local...</span></div>
+            <div class="line"><span class="agent">[Agente Beta]</span> <span class="cmd">> clasificar correos</span></div>
+            <div class="line"><span class="result">  Analizando 142 correos nuevos...</span></div>
+            <div class="line"><span class="agent">[Agente Gamma]</span> <span class="cmd">> entrenar modelo (signos)</span></div>
+            <div class="line"><span class="result">  Dataset: 84,200 imagenes de se&#xF1;as...</span></div>
+            <div class="line"><span class="agent">[Agente Alpha]</span> <span class="result">  Cotizacion enviada al cliente. <span class="timing">(2.4s)</span></span></div>
+            <div class="line"><span class="agent">[Sistema]</span> <span class="result">  Monitoreando 4 agentes activos...</span></div>
+          </div>
+        </div>
+      </article>
+      <article class="card span-2" data-od-id="card-command-console">
+        <div class="card-head"><h3>Ejecutar ordenes al sistema</h3></div>
+        <div class="card-body">
+          <div class="cmd-grid">
+            <button class="cmd-btn" onclick="execCmd('atender')"><div class="icon">&#x1F4AC;</div>Atender cotizacion</button>
+            <button class="cmd-btn" onclick="execCmd('entrenar')"><div class="icon">&#x1F9E0;</div>Entrenar agente</button>
+            <button class="cmd-btn" onclick="execCmd('clasificar')"><div class="icon">&#x1F4E8;</div>Clasificar correos</button>
+            <button class="cmd-btn" onclick="execCmd('rag')"><div class="icon">&#x1F50D;</div>Consultar RAG</button>
+            <button class="cmd-btn" onclick="execCmd('automatizar')"><div class="icon">&#x2699;</div>Automatizar flujo</button>
+            <button class="cmd-btn" onclick="execCmd('señas')"><div class="icon">&#x270B;</div>Reconocer se&#xF1;as</button>
+          </div>
+        </div>
+      </article>
+      <article class="card" data-od-id="card-agent-feed">
+        <div class="card-head"><h3>Actividad de agentes</h3></div>
+        <div class="card-body">
+          <div class="console-feed" id="console-feed">
+            <div class="entry info"><span class="time">14:32:01</span>Sistema iniciado — 4 agentes en linea</div>
+            <div class="entry ok"><span class="time">14:32:05</span>Agente Alpha: cotizacion #1428 completada</div>
+            <div class="entry info"><span class="time">14:32:18</span>RAG: 3 documentos indexados del CRM</div>
+            <div class="entry ok"><span class="time">14:33:02</span>Agente Beta: 87 correos clasificados</div>
+            <div class="entry info"><span class="time">14:33:44</span>Pipeline de se&#xF1;as: 2,400 frames procesados</div>
+            <div class="entry warn"><span class="time">14:34:10</span>Agente Gamma: reentrenamiento sugerido</div>
+          </div>
+        </div>
+      </article>
+      <article class="card" data-od-id="card-agents">
+        <div class="card-head"><h3>Agentes activos</h3></div>
+        <div class="card-body">
+          <div class="agent-grid">
+            <div class="agent-card"><div class="agent-avatar">&#x1F916;</div><span class="aname">Alpha</span><span class="arole">Atencion al cliente</span><span class="astatus active">activo</span></div>
+            <div class="agent-card"><div class="agent-avatar">&#x1F4CA;</div><span class="aname">Beta</span><span class="arole">Clasificacion de datos</span><span class="astatus active">activo</span></div>
+            <div class="agent-card"><div class="agent-avatar">&#x1F9E0;</div><span class="aname">Gamma</span><span class="arole">Lenguaje de se&#xF1;as</span><span class="astatus thinking">procesando</span></div>
+            <div class="agent-card"><div class="agent-avatar">&#x2699;</div><span class="aname">Delta</span><span class="arole">RAG + Automatizacion</span><span class="astatus idle">en espera</span></div>
+          </div>
+        </div>
+      </article>
+      <article class="card span-2" data-od-id="card-señas">
+        <div class="card-head"><h3>Lenguaje de señas — Reconocimiento en vivo</h3></div>
+        <div class="card-body"><div class="señas-panel"><div class="señas-display" id="señas-display" onclick="cycleSign()">&#x270B;</div><div class="señas-text" id="señas-text">Sistema de reconocimiento de lengua de se&#xF1;as colombiana activo</div></div></div>
+      </article>
+    </main>
+  </div>
+  <script>
+    (function(){
+      var pc=document.getElementById('particles');
+      for(var i=0;i<45;i++){
+        var p=document.createElement('div');p.className='particle';
+        p.style.left=Math.random()*100+'%';
+        p.style.bottom=-(Math.random()*30)+'px';
+        p.style.animationDuration=(6+Math.random()*14)+'s';
+        p.style.animationDelay=Math.random()*10+'s';
+        p.style.width=p.style.height=(1.5+Math.random()*2.5)+'px';
+        pc.appendChild(p);
+      }
+    })();
+    var feeds=[{type:'info',msg:'Agente Alpha: procesando solicitud de cliente',time:'14:37:02'},{type:'ok',msg:'Agente Beta: clasificacion completada — 94 correos',time:'14:37:15'},{type:'info',msg:'RAG: chunk semantico indexado del manual de producto',time:'14:37:28'},{type:'warn',msg:'Agente Gamma: precision del modelo 87.3% — reentrenar',time:'14:37:41'},{type:'ok',msg:'Automatizacion: flujo de onboarding ejecutado',time:'14:37:55'}];
+    var fi=0;
+    var signs=[{emoji:'&#x270B;',text:'Hola — saludo inicial'},{emoji:'&#x1F44D;',text:'Bien / aprobado / continuar'},{emoji:'&#x1F91D;',text:'Acuerdo / colaboracion'},{emoji:'&#x270C;',text:'Paz / tranquilidad / ok'},{emoji:'&#x1F91F;',text:'Gracias — agradecimiento'}];
+    var si=0;
+    function execCmd(cmd){
+      var f=feeds[fi%feeds.length];fi++;
+      var c=document.getElementById('console-feed');
+      var e=document.createElement('div');e.className='entry '+f.type;
+      e.innerHTML='<span class=time>'+f.time+'</span>'+f.msg;
+      if(c)c.insertBefore(e,c.firstChild);
+      var ac=document.getElementById('agent-console');
+      if(ac){
+        var l=document.createElement('div');l.className='line';
+        l.innerHTML='<span class=agent>[Sistema]</span> <span class=cmd>> '+cmd+'</span>';
+        ac.appendChild(l);
+        var r=document.createElement('div');r.className='line';
+        r.innerHTML='<span class=result>  Ejecutando orden: '+cmd+'...</span>';
+        ac.appendChild(r);
+        ac.scrollTop=ac.scrollHeight;
+      }
+    }
+    function cycleSign(){
+      var s=signs[si%signs.length];si++;
+      document.getElementById('señas-display').innerHTML=s.emoji;
+      document.getElementById('señas-text').textContent=s.text;
+    }
+  </script>
+</body>
+</html>

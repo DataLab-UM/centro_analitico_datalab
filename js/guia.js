@@ -307,7 +307,10 @@
           this.reiniciarCon([this.data.regreso]);   // solo el saludo corto
         }
       }
-      if (!cercaAhora && this.cerca) this.callar();  // se fue: silencio
+      if (!cercaAhora && this.cerca) {
+        this.callar();          // se fue: silencio
+        this.haVisto = true;    // salir a mitad de discurso tambien cuenta como visto
+      }
       this.cerca = cercaAhora;
     }
   });
