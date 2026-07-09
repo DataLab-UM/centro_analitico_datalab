@@ -151,7 +151,10 @@ AFRAME.registerComponent('tarjeta', {
 AFRAME.registerComponent('fichas-agentes', {
   schema: {
     lista: { default: '' },          // Nombre:Rol:estado|Nombre:Rol:estado|...
-    acento: { default: '#b48cff' }
+    acento: { default: '#b48cff' },
+    fila: { default: false },        // true: 4 en fila (consola); false: rejilla 2x2
+    objetivo: { default: '' },       // si se define, la ficha es clickeable y
+    evento: { default: '' }          // emite este evento con su índice
   },
 
   init: function () {
@@ -161,8 +164,9 @@ AFRAME.registerComponent('fichas-agentes', {
       'procesando': '#4dd8ff',
       'en espera': '#8aa4b8'
     };
-    // rejilla 2x2 centrada en el entity
-    const POSICIONES = [[-0.7, 0.44], [0.7, 0.44], [-0.7, -0.44], [0.7, -0.44]];
+    const POSICIONES = this.data.fila
+      ? [[-2.13, 0], [-0.71, 0], [0.71, 0], [2.13, 0]]
+      : [[-0.7, 0.44], [0.7, 0.44], [-0.7, -0.44], [0.7, -0.44]];
 
     this.data.lista.split('|').map(s => s.trim()).filter(Boolean).forEach((def, i) => {
       const [nombre, rol, estado] = def.split(':').map(s => s.trim());
@@ -176,9 +180,29 @@ AFRAME.registerComponent('fichas-agentes', {
         const n = document.createElement(tag);
         Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v));
         ficha.appendChild(n);
+        return n;
       };
 
-      crear('a-plane', { width: 1.3, height: 0.78, color: '#0a1420', material: 'shader: flat' });
+      const fondo = crear('a-plane', { width: 1.3, height: 0.78, color: '#0a1420', material: 'shader: flat' });
+      if (this.data.objetivo && this.data.evento) {
+        fondo.classList.add('clickable');
+        ficha.addEventListener('mouseenter', () => {
+          ficha.setAttribute('animation__hover',
+            'property: scale; to: 1.1 1.1 1.1; dur: 160; easing: easeOutQuad');
+          fondo.setAttribute('color', '#13293d');
+        });
+        ficha.addEventListener('mouseleave', () => {
+          ficha.setAttribute('animation__hover',
+            'property: scale; to: 1 1 1; dur: 160; easing: easeOutQuad');
+          fondo.setAttribute('color', '#0a1420');
+        });
+        ficha.addEventListener('click', () => {
+          const objetivo = document.querySelector(this.data.objetivo);
+          if (objetivo) objetivo.emit(this.data.evento, { dato: String(i) });
+          fondo.setAttribute('color', '#1d4a63');
+          setTimeout(() => fondo.setAttribute('color', '#0a1420'), 300);
+        });
+      }
       // avatar: circulo de acento con la inicial del agente
       crear('a-circle', {
         radius: 0.1, color: this.data.acento, position: '0 0.22 0.005',

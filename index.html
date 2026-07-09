@@ -9,6 +9,11 @@
   <script src="vendor/echarts.min.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/paneles.js"></script>
+  <script src="js/pipeline.js"></script>
+  <script src="js/agentes.js"></script>
+  <script src="js/escenas-web.js"></script>
+  <script src="js/dev-vivo.js"></script>
+  <script src="js/panorama.js"></script>
   <script src="js/terminal-codigo.js"></script>
   <script src="js/portal.js"></script>
   <script src="js/interaccion.js"></script>
@@ -48,18 +53,18 @@
     <a-videosphere id="esfera-video" visible="false" fondo-lobby="video: #video-lobby; rotacion: 0 180 0"></a-videosphere>
 
     <!-- ================= LOBBY / RECEPCION (origen) ================= -->
-    <!-- Letrero de bienvenida -->
-    <a-plane width="7.4" height="1.7" position="0 3.1 -5.2" color="#133445"
+    <!-- Letrero de bienvenida: logo a la izquierda, textos despejados a la derecha -->
+    <a-plane width="7.8" height="1.8" position="0 4.15 -5.2" color="#133445"
              material="shader: flat; transparent: true; opacity: 0.88"></a-plane>
-    <a-image src="#logo" width="1" height="1" position="-2.9 3.1 -5.18"></a-image>
+    <a-image src="#logo" width="1.15" height="1.15" position="-3.05 4.15 -5.18"></a-image>
     <a-text font="assets/fonts/Roboto-msdf.json" value="BIENVENIDO A DATALAB UM"
-            position="0.4 3.38 -5.15" align="center" color="#5fd87a" width="6.5"></a-text>
+            position="0.6 4.45 -5.15" align="center" color="#5fd87a" width="5.6"></a-text>
     <a-text font="assets/fonts/Roboto-msdf.json"
             value="Tecnologia que inspira confianza — mira un portal para entrar a cada oficina"
-            position="0.4 2.82 -5.15" align="center" color="#c8dcec" width="4.6"></a-text>
+            position="0.6 3.85 -5.15" align="center" color="#c8dcec" width="4.4"></a-text>
 
-    <!-- Holograma del logo DataLab girando sobre el lobby -->
-    <a-entity holo-logo position="0 4.7 -7"></a-entity>
+    <!-- Holograma del logo DataLab girando sobre el lobby, por encima del letrero -->
+    <a-entity holo-logo position="0 7 -7"></a-entity>
 
     <!-- Vida ambiental: particulas de datos + pulsos de luz en el piso -->
     <a-entity particulas="cantidad: 160; color: #5fd87a; radio: 11; alto: 7"></a-entity>
@@ -77,39 +82,63 @@
 
     <!-- DATO, el robot guia del lobby -->
     <a-entity robot-guia="mensajes: Hola! Soy DATO, tu guia en DataLab UM.|DataLab construye software, datos e inteligencia artificial para que tu empresa decida mejor.|Cada portal te lleva a una oficina: Business Intelligence, Agentes de IA, Plataformas Web y el Panorama de Crecimiento.|Para entrar, mira fijo el portal un momento. Nos vemos adentro!; unaVez: true; regreso: Bienvenido de vuelta. Elige otra oficina para seguir el recorrido."
-              position="2.4 0 -3.4"></a-entity>
+              position="4.9 0 -1.1"></a-entity>
 
     <!-- ============ OFICINA BI & DESARROLLO (centro -60 0 0) ============ -->
     <a-entity position="-60 0 0">
-      <a-plane width="8" height="1.3" position="0 3.9 -5" color="#133445"
+      <a-plane width="8" height="1.3" position="0 4.7 -5" color="#133445"
                material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
       <a-text font="assets/fonts/Roboto-msdf.json" value="OFICINA BUSINESS INTELLIGENCE"
-              position="0 4.1 -4.95" align="center" color="#5fd87a" width="7"></a-text>
+              position="0 4.9 -4.95" align="center" color="#5fd87a" width="7"></a-text>
       <a-text font="assets/fonts/Roboto-msdf.json" value="Tus datos convertidos en decisiones, en tiempo real"
-              position="0 3.65 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
+              position="0 4.45 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
 
-      <!-- PANTALLA GIGANTE al fondo: el equipo desarrollando en vivo -->
-      <a-entity position="0 0 -10.8">
-        <a-text font="assets/fonts/Roboto-msdf.json" value="DESARROLLO EN VIVO"
-                position="0 6.35 0" align="center" color="#7dffb0" width="7"></a-text>
-        <a-plane width="9.7" height="6.2" position="0 3.15 -0.08" color="#5fd87a"
+      <!-- PANTALLA GIGANTE al fondo: el viaje del dato en visual -->
+      <a-entity position="0 0 -13.5">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="DEL DATO A LA DECISION - EN VIVO"
+                position="0 7.65 0" align="center" color="#7dffb0" width="7"></a-text>
+        <a-plane width="9.7" height="6.2" position="0 4.4 -0.08" color="#5fd87a"
                  material="shader: flat; transparent: true; opacity: 0.12"></a-plane>
-        <a-plane width="9.4" height="5.9" position="0 3.15 -0.04" color="#0a1420"
+        <a-plane width="9.4" height="5.9" position="0 4.4 -0.04" color="#0a1420"
                  material="shader: flat"></a-plane>
-        <a-plane terminal-codigo="guion: desarrollo" width="9" height="5.6"
-                 position="0 3.15 0" material="shader: flat"></a-plane>
+        <a-plane id="pantalla-pipeline" pipeline-vivo width="9" height="5.6"
+                 position="0 4.4 0" material="shader: flat"></a-plane>
       </a-entity>
 
-      <!-- 4 tableros instalados (bisel + poste + base), arco radio 5.2 -->
-      <a-entity position="-4.41 0 -2.76" rotation="0 58 0" montaje-panel>
+      <!-- consola para explorar las etapas del flujo, en la base de la pantalla
+           (escalada para que los botones sigan siendo faciles de apuntar de lejos) -->
+      <a-entity position="0 0 -12.6" scale="1.4 1.4 1"
+                tarjeta="titulo: EXPLORA EL FLUJO DE TUS DATOS; ancho: 5.8; alto: 0.95; centroY: 0.66; poste: true">
+        <a-entity boton-3d="etiqueta: VER FUENTES; objetivo: #pantalla-pipeline; evento: enfocar; dato: 0"
+                  position="-2.1 0.52 0.02"></a-entity>
+        <a-entity boton-3d="etiqueta: VER INTEGRACION; objetivo: #pantalla-pipeline; evento: enfocar; dato: 1"
+                  position="-0.7 0.52 0.02"></a-entity>
+        <a-entity boton-3d="etiqueta: VER MODELO IA; objetivo: #pantalla-pipeline; evento: enfocar; dato: 2"
+                  position="0.7 0.52 0.02"></a-entity>
+        <a-entity boton-3d="etiqueta: VER IMPACTO; objetivo: #pantalla-pipeline; evento: enfocar; dato: 3"
+                  position="2.1 0.52 0.02"></a-entity>
+      </a-entity>
+
+      <!-- 6 tableros instalados en arco amplio (radio 6.7, 30 grados entre si) -->
+      <a-entity position="-6.67 0 -0.58" rotation="0 85 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: embudo" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="De visitantes a ventas:\nve donde se pierden tus clientes."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+      </a-entity>
+
+      <a-entity position="-5.49 0 -3.84" rotation="0 55 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
         <a-plane id="panel-prediccion" panel-echarts="tipo: prediccion" panel-interactivo
-                 width="2.6" height="1.46" position="0 1.95 0"
+                 width="2.9" height="1.62" position="0 2.05 0"
                  material="shader: flat"></a-plane>
-        <a-plane width="2.35" height="0.62" position="0 0.85 0.02" color="#133445"
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
                  material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
         <a-text font="assets/fonts/Roboto-msdf.json"
                 value="Cuanto venderas proximamente.\nCompra e invierte con anticipacion."
-                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.15"></a-text>
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
         <!-- filtro interactivo del rango de prediccion -->
         <a-entity boton-3d="etiqueta: SEMANAS; objetivo: #panel-prediccion; evento: filtro; dato: semanas"
                   position="-1.15 0.38 0.06"></a-entity>
@@ -119,39 +148,56 @@
                   position="1.15 0.38 0.06"></a-entity>
       </a-entity>
 
-      <a-entity position="-1.78 0 -4.89" rotation="0 20 0" montaje-panel>
-        <a-plane panel-echarts="tipo: ventas" panel-interactivo width="2.6" height="1.46"
-                 position="0 1.95 0" material="shader: flat"></a-plane>
-        <a-plane width="2.35" height="0.62" position="0 0.85 0.02" color="#133445"
+      <a-entity position="-2.83 0 -6.07" rotation="0 25 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane id="panel-ventas" panel-echarts="tipo: ventas" panel-interactivo
+                 width="2.9" height="1.62" position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
                  material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
         <a-text font="assets/fonts/Roboto-msdf.json"
                 value="Ingresos entrando minuto a minuto.\nDetecta caidas al instante."
-                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.15"></a-text>
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+        <!-- filtro interactivo del rango de ventas -->
+        <a-entity boton-3d="etiqueta: HOY; objetivo: #panel-ventas; evento: filtro; dato: hoy"
+                  position="-1.15 0.38 0.06"></a-entity>
+        <a-entity boton-3d="etiqueta: SEMANA; objetivo: #panel-ventas; evento: filtro; dato: semana"
+                  position="0 0.38 0.06"></a-entity>
+        <a-entity boton-3d="etiqueta: MES; objetivo: #panel-ventas; evento: filtro; dato: mes"
+                  position="1.15 0.38 0.06"></a-entity>
       </a-entity>
 
-      <a-entity position="1.78 0 -4.89" rotation="0 -20 0" montaje-panel>
-        <a-plane panel-echarts="tipo: kpi" panel-interactivo width="2.6" height="1.46"
-                 position="0 1.95 0" material="shader: flat"></a-plane>
-        <a-plane width="2.35" height="0.62" position="0 0.85 0.02" color="#133445"
+      <a-entity position="2.83 0 -6.07" rotation="0 -25 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: kpi" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
                  material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
         <a-text font="assets/fonts/Roboto-msdf.json"
                 value="La salud de tu operacion de un vistazo.\nAlertas antes de que sea problema."
-                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.15"></a-text>
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
       </a-entity>
 
-      <a-entity position="4.41 0 -2.76" rotation="0 -58 0" montaje-panel>
-        <a-plane panel-echarts="tipo: calor" panel-interactivo width="2.6" height="1.46"
-                 position="0 1.95 0" material="shader: flat"></a-plane>
-        <a-plane width="2.35" height="0.62" position="0 0.85 0.02" color="#133445"
+      <a-entity position="5.49 0 -3.84" rotation="0 -55 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: calor" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
                  material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
         <a-text font="assets/fonts/Roboto-msdf.json"
                 value="Cuando compran tus clientes.\nEnfoca tu equipo en las horas pico."
-                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.15"></a-text>
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
       </a-entity>
 
-      <!-- DATO explica la oficina -->
+      <a-entity position="6.67 0 -0.58" rotation="0 -85 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: canales" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Que canal te vende mas.\nInvierte donde funciona."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+      </a-entity>
+
+      <!-- DATO explica la oficina, a un lado del arco de tableros -->
       <a-entity robot-guia="mensajes: Bienvenido a Business Intelligence.|Cada tablero muestra tu negocio en vivo: ventas, clientes, salud operativa y predicciones.|Apunta un tablero para resaltarlo. Y prueba los botones bajo la prediccion para cambiar el rango.|Al fondo, nuestro equipo desarrollando en tiempo real.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
-                position="2.9 0 -2.0"></a-entity>
+                position="-5.6 0 1.9"></a-entity>
 
       <!-- Vida ambiental -->
       <a-entity particulas="cantidad: 100; color: #4dd8ff; radio: 13; alto: 7; velocidad: 0.18"></a-entity>
@@ -162,54 +208,97 @@
 
     <!-- ============ OFICINA AGENTES DE IA (centro 60 0 0) ============ -->
     <a-entity position="60 0 0">
-      <a-plane width="8" height="1.3" position="0 3.9 -5" color="#133445"
+      <a-plane width="8" height="1.3" position="0 4.7 -5" color="#133445"
                material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
       <a-text font="assets/fonts/Roboto-msdf.json" value="OFICINA AGENTES DE IA"
-              position="0 4.1 -4.95" align="center" color="#5fd87a" width="7"></a-text>
+              position="0 4.9 -4.95" align="center" color="#5fd87a" width="7"></a-text>
       <a-text font="assets/fonts/Roboto-msdf.json" value="Automatizacion inteligente que trabaja 24/7"
-              position="0 3.65 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
+              position="0 4.45 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
 
-      <!-- Consola de agentes en vivo -->
-      <a-entity position="0 0 -4.6"
-                tarjeta="titulo: CONSOLA DE AGENTES; ancho: 3.7; alto: 2.55; centroY: 2.05; acento: #b48cff; poste: true">
-        <a-plane id="consola-ia" terminal-codigo="guion: agentes" width="3.42" height="2"
-                 position="0 1.85 0" material="shader: flat"></a-plane>
+      <!-- PANTALLA GIGANTE al fondo: los agentes trabajando en vivo -->
+      <a-entity position="0 0 -13.5">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="TUS AGENTES TRABAJANDO - EN VIVO"
+                position="0 7.65 0" align="center" color="#b48cff" width="7"></a-text>
+        <a-plane width="9.7" height="6.2" position="0 4.4 -0.08" color="#b48cff"
+                 material="shader: flat; transparent: true; opacity: 0.12"></a-plane>
+        <a-plane width="9.4" height="5.9" position="0 4.4 -0.04" color="#0a1420"
+                 material="shader: flat"></a-plane>
+        <a-plane id="pantalla-agentes" agentes-vivo width="9" height="5.6"
+                 position="0 4.4 0" material="shader: flat"></a-plane>
       </a-entity>
 
-      <!-- Menu de ordenes: el visitante manda y el agente ejecuta en la consola -->
-      <a-entity position="0 0 -3"
-                tarjeta="titulo: DALE UNA ORDEN AL AGENTE; ancho: 4.3; alto: 0.95; centroY: 1.12; acento: #b48cff; poste: true">
-        <a-entity boton-3d="etiqueta: ATENDER COTIZACION; objetivo: #consola-ia; evento: ejecutar; dato: 0"
-                  position="-1.4 0.98 0.02"></a-entity>
-        <a-entity boton-3d="etiqueta: ENTRENAR AGENTE; objetivo: #consola-ia; evento: ejecutar; dato: 1"
-                  position="0 0.98 0.02"></a-entity>
-        <a-entity boton-3d="etiqueta: CLASIFICAR CORREOS; objetivo: #consola-ia; evento: ejecutar; dato: 2"
-                  position="1.4 0.98 0.02"></a-entity>
+      <!-- selector: el tablero de agentes activos, en la base de la pantalla.
+           Mirar una ficha = la pantalla muestra el flujo de ese agente -->
+      <a-entity position="0 0 -12.6" scale="1.2 1.2 1"
+                tarjeta="titulo: AGENTES ACTIVOS - MIRA UNO PARA VER SU TRABAJO; ancho: 5.9; alto: 1.15; centroY: 0.75; acento: #b48cff; poste: true">
+        <a-entity fichas-agentes="lista: Alpha:Atencion al cliente:activo|Beta:Clasificacion de correos:activo|Gamma:Vision artificial:procesando|Delta:RAG y automatizacion:en espera; fila: true; objetivo: #pantalla-agentes; evento: enfocar"
+                  position="0 0.55 0.02"></a-entity>
       </a-entity>
 
-      <!-- Equipo de agentes (fichas del template oficina-ia) -->
-      <a-entity position="4.3 0 -0.9" rotation="0 -62 0"
-                tarjeta="titulo: AGENTES ACTIVOS; ancho: 2.9; alto: 2.15; centroY: 1.83; acento: #b48cff; poste: true">
-        <a-entity fichas-agentes="lista: Alpha:Atencion al cliente:activo|Beta:Clasificacion de datos:activo|Gamma:Vision artificial:procesando|Delta:RAG y automatizacion:en espera"
-                  position="0 1.66 0.01"></a-entity>
-      </a-entity>
-
-      <!-- DATO explica la oficina -->
-      <a-entity robot-guia="mensajes: Esta es la oficina de Agentes de IA.|Aqui trabajan agentes 24/7: responden clientes, cotizan y clasifican correos.|Dale una orden con los botones y mira la consola ejecutarla en vivo.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
-                position="-2.9 0 -2.2"></a-entity>
+      <!-- DATO explica la oficina, al costado izquierdo -->
+      <a-entity robot-guia="mensajes: Esta es la oficina de Agentes de IA.|Aqui trabajan agentes 24/7: responden clientes, cotizan y clasifican correos.|Mira la ficha de un agente en el tablero central y la pantalla te mostrara su trabajo en vivo.|En los tableros de alrededor: sus acciones, las horas que te ahorran y la calidad de su trabajo.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
+                position="-5.6 0 0.4"></a-entity>
 
       <!-- Vida ambiental: particulas moradas a tono con el laboratorio -->
       <a-entity particulas="cantidad: 140; color: #b48cff; radio: 12; alto: 7; velocidad: 0.3"></a-entity>
       <a-entity pulso-piso="color: #b48cff; radioMax: 3.5" position="0 0.03 -4.6"></a-entity>
 
-      <!-- Placas de servicio a los lados -->
-      <a-entity position="-3.4 0 -2.6" rotation="0 45 0"
+      <!-- Arco de 6 puestos (radio 6.7, 30 grados entre si), como en BI:
+           2 placas en los extremos + 4 tableros de estadisticas de agentes -->
+      <a-entity position="-6.67 0 -0.58" rotation="0 85 0"
                 tarjeta="titulo: QUE HACEN LOS AGENTES; ancho: 3; alto: 1.3; centroY: 1.95; acento: #b48cff; poste: true">
         <a-text font="assets/fonts/Roboto-msdf.json"
                 value="Responden clientes, clasifican\ncorreos y ejecutan procesos\nmientras tu equipo descansa."
                 position="0 1.83 0.01" align="center" color="#c8dcec" width="2.7"></a-text>
       </a-entity>
-      <a-entity position="3.4 0 -2.6" rotation="0 -45 0"
+
+      <a-entity position="-5.49 0 -3.84" rotation="0 55 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane id="panel-acciones" panel-echarts="tipo: acciones" panel-interactivo
+                 width="2.9" height="1.62" position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Todo lo que ejecutaron por ti.\nCambia el rango con los botones."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+        <a-entity boton-3d="etiqueta: HOY; objetivo: #panel-acciones; evento: filtro; dato: hoy"
+                  position="-1.15 0.38 0.06"></a-entity>
+        <a-entity boton-3d="etiqueta: SEMANA; objetivo: #panel-acciones; evento: filtro; dato: semana"
+                  position="0 0.38 0.06"></a-entity>
+        <a-entity boton-3d="etiqueta: MES; objetivo: #panel-acciones; evento: filtro; dato: mes"
+                  position="1.15 0.38 0.06"></a-entity>
+      </a-entity>
+
+      <a-entity position="-2.83 0 -6.07" rotation="0 25 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: horas" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Tiempo humano recuperado.\nTu equipo enfocado en lo importante."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+      </a-entity>
+
+      <a-entity position="2.83 0 -6.07" rotation="0 -25 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: estado-agentes" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Que estan haciendo ahora mismo.\nSiempre hay uno de turno."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+      </a-entity>
+
+      <a-entity position="5.49 0 -3.84" rotation="0 -55 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: calidad" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Que tan bien lo hacen.\nSiempre supervisados por humanos."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+      </a-entity>
+
+      <a-entity position="6.67 0 -0.58" rotation="0 -85 0"
                 tarjeta="titulo: INTEGRACIONES; ancho: 3; alto: 1.3; centroY: 1.95; acento: #b48cff; poste: true">
         <a-text font="assets/fonts/Roboto-msdf.json"
                 value="Conectados a tus sistemas:\nCRM, correo, WhatsApp, ERP.\nSiempre supervisados por humanos."
@@ -222,36 +311,61 @@
 
     <!-- ============ OFICINA PLATAFORMAS WEB (centro 0 0 -60) ============ -->
     <a-entity position="0 0 -60">
-      <a-plane width="8" height="1.3" position="0 3.9 -5" color="#133445"
+      <a-plane width="8" height="1.3" position="0 4.7 -5" color="#133445"
                material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
       <a-text font="assets/fonts/Roboto-msdf.json" value="OFICINA PLATAFORMAS WEB Y ENTORNOS"
-              position="0 4.1 -4.95" align="center" color="#5fd87a" width="7"></a-text>
+              position="0 4.9 -4.95" align="center" color="#5fd87a" width="7"></a-text>
       <a-text font="assets/fonts/Roboto-msdf.json" value="Apps, portales y experiencias inmersivas"
-              position="0 3.65 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
+              position="0 4.45 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
 
-      <!-- 3 tarjetas de servicio -->
-      <a-entity position="-2.29 0 -3.28" rotation="0 35 0"
-                tarjeta="titulo: PLATAFORMAS WEB; ancho: 2.5; alto: 1.35; centroY: 1.9; acento: #4dd8ff; poste: true">
-        <a-text font="assets/fonts/Roboto-msdf.json"
-                value="Aplicaciones y dashboards\na la medida de tu operacion."
-                position="0 1.78 0.01" align="center" color="#c8dcec" width="2.2"></a-text>
-      </a-entity>
-      <a-entity position="0 0 -4"
-                tarjeta="titulo: E-COMMERCE Y PORTALES; ancho: 2.5; alto: 1.35; centroY: 1.9; acento: #4dd8ff; poste: true">
-        <a-text font="assets/fonts/Roboto-msdf.json"
-                value="Vende y atiende en linea\ncon datos en tiempo real."
-                position="0 1.78 0.01" align="center" color="#c8dcec" width="2.2"></a-text>
-      </a-entity>
-      <a-entity position="2.29 0 -3.28" rotation="0 -35 0"
-                tarjeta="titulo: ENTORNOS INMERSIVOS; ancho: 2.5; alto: 1.35; centroY: 1.9; acento: #4dd8ff; poste: true">
-        <a-text font="assets/fonts/Roboto-msdf.json"
-                value="Experiencias VR como esta.\nEste recorrido lo construyo DataLab UM."
-                position="0 1.78 0.01" align="center" color="#c8dcec" width="2.2"></a-text>
+      <!-- PANTALLA GIGANTE al fondo: desarrollo en vivo (codigo -> producto) -->
+      <a-entity position="0 0 -14">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="DESARROLLO EN VIVO - DEL CODIGO A TU PROYECTO"
+                position="0 7.65 0" align="center" color="#4dd8ff" width="7"></a-text>
+        <a-plane width="9.7" height="6.2" position="0 4.4 -0.08" color="#4dd8ff"
+                 material="shader: flat; transparent: true; opacity: 0.12"></a-plane>
+        <a-plane width="9.4" height="5.9" position="0 4.4 -0.04" color="#0a1420"
+                 material="shader: flat"></a-plane>
+        <a-plane id="pantalla-dev" dev-vivo width="9" height="5.6"
+                 position="0 4.4 0" material="shader: flat"></a-plane>
       </a-entity>
 
-      <!-- DATO explica la oficina -->
-      <a-entity robot-guia="mensajes: Aqui creamos plataformas web y entornos inmersivos.|Apps, e-commerce y dashboards a la medida de tu operacion.|Este recorrido VR tambien lo construimos nosotros.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
-                position="-3.2 0 -1.8"></a-entity>
+      <!-- selector de proyecto, en la base de la pantalla gigante -->
+      <a-entity position="0 0 -13.1" scale="1.2 1.2 1"
+                tarjeta="titulo: MIRA COMO NACE UN PROYECTO - ELIGE UNO; ancho: 4.9; alto: 0.95; centroY: 0.66; acento: #4dd8ff; poste: true">
+        <a-entity boton-3d="etiqueta: SITIO WEB PRO; objetivo: #pantalla-dev; evento: proyecto; dato: web"
+                  position="-1.5 0.52 0.02"></a-entity>
+        <a-entity boton-3d="etiqueta: E-COMMERCE; objetivo: #pantalla-dev; evento: proyecto; dato: tienda"
+                  position="0 0.52 0.02"></a-entity>
+        <a-entity boton-3d="etiqueta: ENTORNO VR; objetivo: #pantalla-dev; evento: proyecto; dato: vr"
+                  position="1.5 0.52 0.02"></a-entity>
+      </a-entity>
+
+      <!-- 3 PANTALLAS DE SERVICIO en arco (corredor central libre hacia la gigante) -->
+      <a-entity position="-7.09 0 -1.25" rotation="0 80 0" montaje-panel="alto: 2.35; ancho: 4.4; altura: 2.75">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="PLATAFORMAS WEB"
+                position="0 4.05 0" align="center" color="#4dd8ff" width="4.5"></a-text>
+        <a-plane escena-web="tipo: web" width="4.4" height="2.75"
+                 position="0 2.35 0" material="shader: flat"></a-plane>
+      </a-entity>
+
+      <a-entity position="-5.09 0 -5.09" rotation="0 45 0" montaje-panel="alto: 2.35; ancho: 4.4; altura: 2.75">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="E-COMMERCE Y PORTALES"
+                position="0 4.05 0" align="center" color="#5fd87a" width="4.5"></a-text>
+        <a-plane escena-web="tipo: tienda" width="4.4" height="2.75"
+                 position="0 2.35 0" material="shader: flat"></a-plane>
+      </a-entity>
+
+      <a-entity position="5.09 0 -5.09" rotation="0 -45 0" montaje-panel="alto: 2.35; ancho: 4.4; altura: 2.75">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="ENTORNOS INMERSIVOS"
+                position="0 4.05 0" align="center" color="#b48cff" width="4.5"></a-text>
+        <a-plane escena-web="tipo: inmersivo" width="4.4" height="2.75"
+                 position="0 2.35 0" material="shader: flat"></a-plane>
+      </a-entity>
+
+      <!-- DATO explica la oficina, al costado derecho -->
+      <a-entity robot-guia="mensajes: Aqui creamos plataformas web y entornos inmersivos.|Mira las tres pantallas: cada una muestra un servicio funcionando en vivo.|Apps, e-commerce y dashboards a la medida de tu operacion.|Este recorrido VR tambien lo construimos nosotros.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
+                position="6.5 0 0.4"></a-entity>
 
       <!-- Vida ambiental: particulas suaves para el estudio claro -->
       <a-entity particulas="cantidad: 70; color: #9adcff; radio: 12; alto: 6; velocidad: 0.15"></a-entity>
@@ -262,55 +376,104 @@
 
     <!-- ============ PANORAMA DE CRECIMIENTO (centro 0 0 60) ============ -->
     <a-entity position="0 0 60">
-      <a-plane width="8" height="1.3" position="0 3.9 -5" color="#133445"
+      <a-plane width="8" height="1.3" position="0 4.7 -5" color="#133445"
                material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
       <a-text font="assets/fonts/Roboto-msdf.json" value="PANORAMA DE CRECIMIENTO"
-              position="0 4.1 -4.95" align="center" color="#5fd87a" width="7"></a-text>
+              position="0 4.9 -4.95" align="center" color="#5fd87a" width="7"></a-text>
       <a-text font="assets/fonts/Roboto-msdf.json" value="Asi evoluciona una empresa que decide con datos"
-              position="0 3.65 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
+              position="0 4.45 -4.95" align="center" color="#c8dcec" width="4.5"></a-text>
 
-      <!-- linea de tiempo: 3 estelas -->
-      <a-entity position="-2.6 0 -3.5">
-        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
-        <a-box width="0.5" height="0.8" depth="0.5" position="0 0.65 0" color="#3a5a74" material="transparent: true"
-               animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 2000"></a-box>
-        <a-text font="assets/fonts/Roboto-msdf.json" value="HOY\nDecisiones a ciegas" position="0 1.7 0" align="center"
-                color="#8aa4b8" width="2.6"></a-text>
-      </a-entity>
-      <a-entity position="0 0 -3.5">
-        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
-        <a-box width="0.5" height="1.6" depth="0.5" position="0 1.05 0" color="#1990b8" material="transparent: true"
-               animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 1600"></a-box>
-        <a-text font="assets/fonts/Roboto-msdf.json" value="CON DATOS\nDecisiones informadas" position="0 2.5 0" align="center"
-                color="#5fd87a" width="2.6"></a-text>
-      </a-entity>
-      <a-entity position="2.6 0 -3.5">
-        <a-box width="1.5" height="0.25" depth="1" position="0 0.125 0" color="#133445"></a-box>
-        <a-box width="0.5" height="2.6" depth="0.5" position="0 1.55 0" color="#2ec98a" material="transparent: true"
-               animation="property: components.material.material.opacity; from: 0.75; to: 1; dir: alternate; loop: true; dur: 1200"></a-box>
-        <a-text font="assets/fonts/Roboto-msdf.json" value="EVOLUCIONADA\nPredice y crece" position="0 3.5 0" align="center"
-                color="#7dffb0" width="2.6"></a-text>
+      <!-- PANTALLA GIGANTE al fondo: la carrera de dos empresas -->
+      <a-entity position="0 0 -14">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="LA HISTORIA DE DOS EMPRESAS - EN VIVO"
+                position="0 7.65 0" align="center" color="#ffd27d" width="7"></a-text>
+        <a-plane width="9.7" height="6.2" position="0 4.4 -0.08" color="#ffd27d"
+                 material="shader: flat; transparent: true; opacity: 0.12"></a-plane>
+        <a-plane width="9.4" height="5.9" position="0 4.4 -0.04" color="#0a1420"
+                 material="shader: flat"></a-plane>
+        <a-plane id="pantalla-panorama" panorama-vivo width="9" height="5.6"
+                 position="0 4.4 0" material="shader: flat"></a-plane>
       </a-entity>
 
-      <!-- CTA de cierre -->
-      <a-entity position="0 0 -6.5"
-                tarjeta="titulo: DATALAB UM CONSTRUYE ESTO; ancho: 5.2; alto: 1.5; centroY: 2.1; colorTitulo: #5fd87a; poste: true">
-        <a-text font="assets/fonts/Roboto-msdf.json" value="Tecnologia que inspira confianza"
-                position="0 2.12 0.01" align="center" color="#c8dcec" width="5"></a-text>
-        <a-text font="assets/fonts/Roboto-msdf.json" value="Pregunta por tus 30 minutos de asesoria gratuita"
-                position="0 1.7 0.01" align="center" color="#8aa4b8" width="4.4"></a-text>
+      <!-- GALERIA DE FASES: pared del fondo flanqueando la pantalla central,
+           dos fases a cada lado, bien separadas y en grande -->
+      <a-entity position="-12.16 0 -7.9" rotation="0 57 0" montaje-panel="alto: 3.0; ancho: 5.6; altura: 3.5">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="FASE 1 - ASI SE EMPIEZA"
+                position="0 5.15 0" align="center" color="#8aa4b8" width="5"></a-text>
+        <a-plane panorama-vivo="fase: 0" width="5.6" height="3.5"
+                 position="0 3.0 0" material="shader: flat"></a-plane>
+      </a-entity>
+      <a-entity position="-7.9 0 -12.16" rotation="0 33 0" montaje-panel="alto: 3.0; ancho: 5.6; altura: 3.5">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="FASE 2 - EL DESPERTAR"
+                position="0 5.15 0" align="center" color="#1990b8" width="5"></a-text>
+        <a-plane panorama-vivo="fase: 1" width="5.6" height="3.5"
+                 position="0 3.0 0" material="shader: flat"></a-plane>
+      </a-entity>
+      <a-entity position="7.9 0 -12.16" rotation="0 -33 0" montaje-panel="alto: 3.0; ancho: 5.6; altura: 3.5">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="FASE 3 - OPERACION VISIBLE"
+                position="0 5.15 0" align="center" color="#4dd8ff" width="5"></a-text>
+        <a-plane panorama-vivo="fase: 2" width="5.6" height="3.5"
+                 position="0 3.0 0" material="shader: flat"></a-plane>
+      </a-entity>
+      <a-entity position="12.16 0 -7.9" rotation="0 -57 0" montaje-panel="alto: 3.0; ancho: 5.6; altura: 3.5">
+        <a-text font="assets/fonts/Roboto-msdf.json" value="FASE 4 - LA VANGUARDIA"
+                position="0 5.15 0" align="center" color="#2ec98a" width="5"></a-text>
+        <a-plane panorama-vivo="fase: 3" width="5.6" height="3.5"
+                 position="0 3.0 0" material="shader: flat"></a-plane>
+      </a-entity>
+
+      <!-- consola al pie de la pantalla central: compara las dos empresas -->
+      <a-entity position="0 0 -13.1" scale="1.2 1.2 1"
+                tarjeta="titulo: COMPARA LAS DOS EMPRESAS EN...; ancho: 6.6; alto: 0.95; centroY: 0.66; acento: #ffd27d; poste: true">
+        <a-entity boton-3d="etiqueta: VENTAS; objetivo: #pantalla-panorama; evento: metrica; dato: 0"
+                  position="-2.4 0.52 0.02"></a-entity>
+        <a-entity boton-3d="etiqueta: COSTOS; objetivo: #pantalla-panorama; evento: metrica; dato: 1"
+                  position="-0.8 0.52 0.02"></a-entity>
+        <a-entity boton-3d="etiqueta: CLIENTES; objetivo: #pantalla-panorama; evento: metrica; dato: 2"
+                  position="0.8 0.52 0.02"></a-entity>
+        <a-entity boton-3d="etiqueta: TRABAJO MANUAL; objetivo: #pantalla-panorama; evento: metrica; dato: 3"
+                  position="2.4 0.52 0.02"></a-entity>
+      </a-entity>
+
+      <!-- arco derecho: por que importan la IA, la tecnologia y los datos -->
+      <a-entity position="2.46 0 -6.77" rotation="0 -20 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: impacto-ia" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Lo que cambia al sumar IA:\nse produce, decide y acierta mas."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+      </a-entity>
+      <a-entity position="5.18 0 -5.0" rotation="0 -46 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: adopcion" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Tu competencia ya decide con datos.\nY cada vez son mas."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
+      </a-entity>
+      <a-entity position="6.85 0 -2.22" rotation="0 -72 0" montaje-panel="alto: 2.05; ancho: 2.9; altura: 1.62">
+        <a-plane panel-echarts="tipo: retorno" panel-interactivo width="2.9" height="1.62"
+                 position="0 2.05 0" material="shader: flat"></a-plane>
+        <a-plane width="2.5" height="0.62" position="0 0.85 0.02" color="#133445"
+                 material="shader: flat; transparent: true; opacity: 0.85"></a-plane>
+        <a-text font="assets/fonts/Roboto-msdf.json"
+                value="Invertir en datos si paga.\nY paga en grande."
+                position="0 0.85 0.04" align="center" color="#c8dcec" width="2.3"></a-text>
       </a-entity>
 
       <a-entity portal="destino: 0 0 0; cielo: #cielo-lobby; video: #video-lobby; rotacionCielo: 0 180 0; titulo: VOLVER AL LOBBY; preview: #prev-lobby"
-                position="3.8 0 0" rotation="0 -90 0"></a-entity>
+                position="3.8 0 0.6" rotation="0 -90 0"></a-entity>
 
-      <!-- DATO cierra el recorrido -->
-      <a-entity robot-guia="mensajes: Asi evoluciona una empresa que decide con datos.|De decisiones a ciegas, a predecir y crecer.|Te regalamos 30 minutos de asesoria: pregunta por ellos al salir.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
-                position="-3.2 0 -1.5"></a-entity>
+      <!-- DATO cierra el recorrido, junto al portal -->
+      <a-entity robot-guia="mensajes: Asi evoluciona una empresa que decide con datos.|En la pantalla central corre la historia de dos empresas: una decide a ciegas y la otra con datos.|Con los botones puedes compararlas en ventas, costos, clientes y trabajo manual.|En las pantallas del fondo estan las cuatro fases de la evolucion: de lo manual a la vanguardia.|Te regalamos 30 minutos de asesoria: pregunta por ellos al salir.|Cuando termines, mira el portal VOLVER AL LOBBY para regresar."
+                position="5.4 0 2.2"></a-entity>
 
-      <!-- Vida ambiental: particulas doradas del atardecer + pulso bajo el CTA -->
+      <!-- Vida ambiental: particulas doradas del atardecer + pulso central -->
       <a-entity particulas="cantidad: 110; color: #ffd27d; radio: 13; alto: 8; velocidad: 0.2"></a-entity>
-      <a-entity pulso-piso="color: #5fd87a; radioMax: 3" position="0 0.03 -6.5"></a-entity>
+      <a-entity pulso-piso="color: #ffd27d; radioMax: 3" position="0 0.03 -5"></a-entity>
     </a-entity>
 
     <!-- Camara con rig. Cursor con fuse: mirar 1.5s = clic (sin controles) -->
@@ -320,6 +483,9 @@
                   raycaster="objects: .clickable, .apuntable; far: 30"
                   animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.4 0.4 0.4; dur: 1500"
                   animation__reset="property: scale; startEvents: mouseleave, click; to: 1 1 1; dur: 150"></a-cursor>
+        <!-- esfera de fundido a negro para las transiciones de portal -->
+        <a-sphere id="fundido" radius="0.3"
+                  material="color: #000; shader: flat; side: back; transparent: true; opacity: 0"></a-sphere>
       </a-entity>
     </a-entity>
   </a-scene>

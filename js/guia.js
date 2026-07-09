@@ -5,10 +5,11 @@
  * generados con tools/genera_voces.py); si no existen, cae al sintetizador
  * del navegador. La burbuja escribe el texto tipo máquina de escribir.
  *
- * Comportamiento: el discurso se dice UNA vez por visita a la zona. Con
- * `unaVez: true` (lobby) la introducción completa suena solo la primera
- * vez; en visitas siguientes se dice el mensaje corto `regreso`. El botón
- * REPETIR siempre vuelve a dar el discurso completo.
+ * Comportamiento: el discurso completo se dice UNA sola vez (la primera
+ * visita a la zona). En visitas siguientes el robot queda en silencio, o
+ * dice el mensaje corto `regreso` si la zona lo define (lobby). El botón
+ * REPETIR siempre vuelve a dar el discurso completo. `unaVez: false`
+ * recupera el modo antiguo (repetir en cada visita) si alguna zona lo pide.
  */
 (function () {
 
@@ -66,7 +67,7 @@
     schema: {
       mensajes: { default: '' },   // mensajes separados por |
       nombre: { default: 'DATO — guia virtual' },
-      unaVez: { default: false },  // introduccion completa solo la primera vez
+      unaVez: { default: true },   // discurso completo solo la primera vez
       regreso: { default: '' }     // mensaje corto para las visitas siguientes
     },
 
@@ -310,6 +311,7 @@
       if (!cercaAhora && this.cerca) {
         this.callar();          // se fue: silencio
         this.haVisto = true;    // salir a mitad de discurso tambien cuenta como visto
+        this.terminado = true;  // y el discurso no sigue avanzando solo de fondo
       }
       this.cerca = cercaAhora;
     }

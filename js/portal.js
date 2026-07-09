@@ -20,23 +20,41 @@ AFRAME.registerComponent('portal', {
     const el = this.el;
     const FUENTE = 'assets/fonts/Roboto-msdf.json';
 
+    // grupo flotante: toda la carta se mece suave (cada portal a su ritmo)
+    const flotante = document.createElement('a-entity');
+    flotante.setAttribute('animation',
+      'property: position; from: 0 0 0; to: 0 0.06 0; dir: alternate; loop: true; ' +
+      'dur: ' + Math.round(2600 + Math.random() * 900) + '; easing: easeInOutSine');
+    el.appendChild(flotante);
+
+    // halo de acento respirando detrás del marco
+    const halo = document.createElement('a-plane');
+    halo.setAttribute('width', 2.46);
+    halo.setAttribute('height', 2.76);
+    halo.setAttribute('position', '0 1.5 -0.02');
+    halo.setAttribute('color', '#5fd87a');
+    halo.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.2');
+    halo.setAttribute('animation',
+      'property: components.material.material.opacity; from: 0.12; to: 0.3; dir: alternate; loop: true; dur: 1800; easing: easeInOutSine');
+    flotante.appendChild(halo);
+
     // marco (es el objeto clickable: tiene geometría para el raycaster)
     const marco = document.createElement('a-plane');
-    marco.setAttribute('width', 1.9);
-    marco.setAttribute('height', 2.5);
-    marco.setAttribute('position', '0 1.35 0');
+    marco.setAttribute('width', 2.3);
+    marco.setAttribute('height', 2.6);
+    marco.setAttribute('position', '0 1.5 0');
     marco.setAttribute('color', '#133445');
     marco.setAttribute('material', 'shader: flat');
     marco.classList.add('clickable');
-    el.appendChild(marco);
+    flotante.appendChild(marco);
 
     // vista previa de la oficina destino
     const prev = document.createElement('a-image');
     prev.setAttribute('src', this.data.preview);
-    prev.setAttribute('width', 1.66);
-    prev.setAttribute('height', 1.04);
-    prev.setAttribute('position', '0 1.8 0.01');
-    el.appendChild(prev);
+    prev.setAttribute('width', 2.06);
+    prev.setAttribute('height', 1.29);
+    prev.setAttribute('position', '0 1.98 0.01');
+    flotante.appendChild(prev);
 
     // título
     const titulo = document.createElement('a-text');
@@ -44,18 +62,18 @@ AFRAME.registerComponent('portal', {
     titulo.setAttribute('value', this.data.titulo);
     titulo.setAttribute('align', 'center');
     titulo.setAttribute('color', '#5fd87a');
-    titulo.setAttribute('width', 1.8);
-    titulo.setAttribute('position', '0 0.85 0.01');
-    el.appendChild(titulo);
+    titulo.setAttribute('width', 2.15);
+    titulo.setAttribute('position', '0 0.92 0.01');
+    flotante.appendChild(titulo);
 
     const entrar = document.createElement('a-text');
     entrar.setAttribute('font', FUENTE);
     entrar.setAttribute('value', 'mira aqui para entrar');
     entrar.setAttribute('align', 'center');
     entrar.setAttribute('color', '#8aa4b8');
-    entrar.setAttribute('width', 1.2);
-    entrar.setAttribute('position', '0 0.35 0.01');
-    el.appendChild(entrar);
+    entrar.setAttribute('width', 1.3);
+    entrar.setAttribute('position', '0 0.42 0.01');
+    flotante.appendChild(entrar);
 
     // anillo pulsante en el piso (afordancia heredada de los hotspots)
     const aro = document.createElement('a-ring');
@@ -70,9 +88,16 @@ AFRAME.registerComponent('portal', {
     el.appendChild(aro);
 
     // interacción (el click del marco burbujea hasta aquí)
-    el.addEventListener('mouseenter', () => el.object3D.scale.set(1.06, 1.06, 1.06));
-    el.addEventListener('mouseleave', () => el.object3D.scale.set(1, 1, 1));
-    el.addEventListener('click', () => {
+    el.addEventListener('mouseenter', () => {
+      el.setAttribute('animation__hover',
+        'property: scale; to: 1.08 1.08 1.08; dur: 180; easing: easeOutQuad');
+    });
+    el.addEventListener('mouseleave', () => {
+      el.setAttribute('animation__hover',
+        'property: scale; to: 1 1 1; dur: 180; easing: easeOutQuad');
+    });
+
+    const viajar = () => {
       const d = this.data.destino;
       document.querySelector('#rig').setAttribute('position', d.x + ' ' + d.y + ' ' + d.z);
 
@@ -96,6 +121,19 @@ AFRAME.registerComponent('portal', {
         if (this.data.cielo) cielo.setAttribute('src', this.data.cielo);
         cielo.setAttribute('rotation', this.data.rotacionCielo);
       }
+    };
+
+    el.addEventListener('click', () => {
+      // transición inmersiva: fundido a negro, viaje y reaparición
+      const fundido = document.querySelector('#fundido');
+      if (!fundido) { viajar(); return; }
+      fundido.setAttribute('animation__in',
+        'property: components.material.material.opacity; to: 1; dur: 280; easing: easeInQuad');
+      setTimeout(() => {
+        viajar();
+        fundido.setAttribute('animation__out',
+          'property: components.material.material.opacity; to: 0; dur: 500; delay: 150; easing: easeOutQuad');
+      }, 320);
     });
   }
 });

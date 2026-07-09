@@ -53,20 +53,34 @@ teletransporta, el fondo 360 cambia):
   (voz neural edge-tts "Gonzalo es-CO"). Fallback: speechSynthesis del
   navegador. **Si cambias cualquier texto de `robot-guia` en `index.html`,
   regenera los audios**: `python tools/genera_voces.py`.
-- Lobby con `unaVez: true`: introducción completa solo la primera vez; en
-  regresos dice el mensaje corto `regreso`. Salir de la zona a mitad del
-  discurso también cuenta como "ya la vio" (`haVisto = true` al salir).
-  Botón REPETIR = discurso completo de nuevo.
+- `unaVez` es el **default**: cada robot dice su discurso completo solo la
+  primera visita; al salir de la zona el guion queda visto y congelado; en
+  regresos, silencio (el lobby dice su `regreso` corto). Botón REPETIR =
+  discurso completo de nuevo.
 
 ## Otros archivos clave
 
 - `js/paneles.js` + `js/datos.js` — dashboards ECharts en vivo (texturas a 10 fps).
-- `js/terminal-codigo.js` — pantallas de "código escribiéndose solo" (guiones: desarrollo, agentes).
-- `js/botones.js` — botones 3D que disparan eventos a paneles/consola.
+  Tipos por oficina: BI (ventas, calor, kpi, prediccion, embudo, canales),
+  agentes (acciones, horas, estado-agentes, calidad) y panorama (impacto-ia,
+  adopcion, retorno). Varios aceptan evento `filtro` desde botones 3D.
+- **Pantallas gigantes canvas** (todas: 1024x640, 10 fps, textura race-safe,
+  botones 3D les emiten eventos, y regreso automático con reloj real):
+  - `js/pipeline.js` — BI: el viaje del dato, 4 vistas (`enfocar`).
+  - `js/agentes.js` — IA: escenas por agente: chat, correos, señas con mano
+    realista, RAG (`enfocar` desde las fichas clickeables).
+  - `js/dev-vivo.js` — Web: split código→producto, 3 proyectos (`proyecto`).
+  - `js/escenas-web.js` — Web: 3 pantallas de servicio (app viva, tienda,
+    recorrido VR en primera persona).
+  - `js/panorama.js` — Panorama: carrera de dos empresas por métrica
+    (`metrica`) + vistas de fase; `fase: N` la fija para la galería del fondo
+    y trae guardián de rendimiento (no redibuja si el rig está a >30 m).
+- `js/terminal-codigo.js` — terminal de código antigua (ya sin uso en escena).
+- `js/botones.js` — botones 3D que disparan eventos a paneles/pantallas.
 - `js/ambiente.js` — partículas, pulsos de piso, holograma del logo.
-- `js/interaccion.js` — hover de paneles, `montaje-panel` (bisel+poste de los
-  dashboards BI), `tarjeta` (card del design system: borde, cabecera con título
-  y punto de estado, poste opcional) y `fichas-agentes` (rejilla de agentes).
+- `js/interaccion.js` — hover de paneles, `montaje-panel` (bisel+poste),
+  `tarjeta` (card del design system) y `fichas-agentes` (fichas clickeables).
+- En canvas la ñ y tildes SÍ funcionan (fuente del sistema); en `a-text` no.
 - `tools/genera_derivados.py` — regenera skyboxes JPG y previews desde `assets/escenas/`.
 - `tools/genera_voces.py` — regenera los MP3 de DATO (requiere edge-tts).
 - `INTEGRACION.md` — guía de integración/uso en el stand (para humanos, no técnica).
@@ -82,19 +96,32 @@ teletransporta, el fondo 360 cambia):
   y **sin tildes ni signos especiales** en los `value` (la fuente no los trae).
 - Pensado para hardware del Quest: shaders flat, texturas optimizadas, ECharts a 10 fps.
 
-## Estado actual (2026-07-08)
+## Estado actual (2026-07-09)
 
-Hecho:
-- 5 zonas completas con portales, DATO con voz, dashboards, terminales, ambiente.
-- Fondos animados 360 (Kling) funcionando en **todas** las zonas, con fallback estático.
-- Fix del bucle de DATO: ya no repite la introducción al volver al lobby.
-- Menús de oficinas rediseñados con el componente `tarjeta` (design system del
-  template): consola y botonera IA, fichas de agentes activos, tarjetas de
-  servicio Web, CTA del Panorama — todo con cabecera, estado e instalación al piso.
+Hecho — las 5 zonas renovadas por completo:
+- Fondos animados 360 (Kling) en todas las zonas, con fallback estático y
+  fundido a negro en cada teletransporte.
+- Lobby: portales amplios animados (mecerse + halo + hover suave), letrero
+  elevado, DATO al costado.
+- Patrón común de oficina: título a 4.7 m, pantalla gigante canvas al fondo
+  (~14 m, elevada) con consola de botones a su pie, arco de tableros ECharts
+  con filtros, DATO al costado, corredor central libre.
+- BI: 6 tableros + pantalla "el viaje de tus datos" (4 vistas).
+- IA: fichas de agentes como selector; escenas por agente (chat con consulta,
+  correos clasificándose, señas con mano realista y landmarks, RAG); 4
+  tableros de estadísticas de agentes.
+- Web: 3 pantallas de servicio en vivo + pantalla gigante "desarrollo en
+  vivo" (código → producto, 3 proyectos).
+- Panorama: carrera de dos empresas comparable por métrica (ventas, costos,
+  clientes, trabajo manual), galería de 4 pantallas de fase en la pared del
+  fondo, 3 tableros del caso de negocio (salto con IA, adopción, retorno).
+- Voces: discurso una sola vez por zona (congelado al salir), REPETIR lo
+  revive; MP3 regenerados para todos los guiones actuales.
 
 Pendiente:
-- Probar en el Quest físico (rendimiento con 5 videos, autoplay en Quest Browser).
-- Plan B offline para la feria: servir desde laptop en red local requiere HTTPS
-  local (WebXR no corre por HTTP salvo en localhost) — sin resolver.
-- Valorar llevar `tarjeta` también al lobby (letrero de bienvenida) y a las
-  placas descriptivas de BI si se quiere unificar al 100 %.
+- Probar en el Quest físico: rendimiento con 5 videos + ~20 canvases vivos
+  (el guardián de distancia solo existe en panorama-vivo; si el Quest sufre,
+  replicarlo en pipeline/agentes/dev-vivo/escenas-web/paneles).
+- Plan B offline para la feria: servir desde laptop en red local requiere
+  HTTPS local (WebXR no corre por HTTP salvo en localhost) — sin resolver.
+- `js/terminal-codigo.js` quedó sin uso en escena: decidir si se elimina.
