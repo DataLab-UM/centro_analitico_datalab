@@ -227,7 +227,9 @@
     },
 
     paso: function () {
-      if (!this.actual.length || this.terminado) return;
+      // el discurso solo corre con el visitante cerca: sin esto, los robots
+      // se "hablaban solos" de fondo al cargar y al llegar ya habian terminado
+      if (!this.cerca || !this.actual.length || this.terminado) return;
       const ahora = performance.now();
       const msg = this.actual[this.idx];
 
