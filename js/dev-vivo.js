@@ -117,9 +117,15 @@ AFRAME.registerComponent('dev-vivo', {
     if (this.el.hasLoaded) aplicarTextura();
     else this.el.addEventListener('loaded', aplicarTextura);
 
-    // ponytail: 10 fps, amable con el Quest
+    // ponytail: 10 fps, amable con el Quest; y sin visitante cerca no redibuja
+    this.posMundo = new THREE.Vector3();
     this.intervalo = setInterval(() => {
       this.t += 0.1;
+      const rig = document.querySelector('#rig');
+      if (rig) {
+        this.el.object3D.getWorldPosition(this.posMundo);
+        if (rig.object3D.position.distanceTo(this.posMundo) > 30) return;
+      }
       this.dibujar();
       if (!this.textura) aplicarTextura();
       if (this.textura) this.textura.needsUpdate = true;

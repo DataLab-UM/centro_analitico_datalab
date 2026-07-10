@@ -89,9 +89,15 @@ AFRAME.registerComponent('pipeline-vivo', {
     else this.el.addEventListener('loaded', aplicarTextura);
     this.aplicarTextura = aplicarTextura;
 
-    // ponytail: 10 fps, igual que los paneles ECharts, amable con el Quest
+    // ponytail: 10 fps, amable con el Quest; y sin visitante cerca no redibuja
+    this.posMundo = new THREE.Vector3();
     this.intervalo = setInterval(() => {
       this.t += 0.1;
+      const rig = document.querySelector('#rig');
+      if (rig) {
+        this.el.object3D.getWorldPosition(this.posMundo);
+        if (rig.object3D.position.distanceTo(this.posMundo) > 30) return;
+      }
       this.paquetes.forEach((q) => { q.p = (q.p + q.v * 10) % 1; });
       if (Math.random() < 0.35) this.regs += Math.floor(Math.random() * 60);
       // volver a la vista principal tras VOLVER_TRAS segundos sin interacción

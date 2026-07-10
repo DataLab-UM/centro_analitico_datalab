@@ -36,8 +36,15 @@ AFRAME.registerComponent('escena-web', {
     if (this.el.hasLoaded) aplicarTextura();
     else this.el.addEventListener('loaded', aplicarTextura);
 
+    // 10 fps; y sin visitante cerca no redibuja (guardian de rendimiento)
+    this.posMundo = new THREE.Vector3();
     this.intervalo = setInterval(() => {
       this.t += 0.1;
+      const rig = document.querySelector('#rig');
+      if (rig) {
+        this.el.object3D.getWorldPosition(this.posMundo);
+        if (rig.object3D.position.distanceTo(this.posMundo) > 30) return;
+      }
       if (Math.floor(this.t * 10) % 3 === 0) Datos.avanzar(this.serie, 15, 95, 7);
       const ctx = this.ctx;
       ctx.fillStyle = '#0a1420';

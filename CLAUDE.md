@@ -65,7 +65,9 @@ teletransporta, el fondo 360 cambia):
   agentes (acciones, horas, estado-agentes, calidad) y panorama (impacto-ia,
   adopcion, retorno). Varios aceptan evento `filtro` desde botones 3D.
 - **Pantallas gigantes canvas** (todas: 1024x640, 10 fps, textura race-safe,
-  botones 3D les emiten eventos, y regreso automático con reloj real):
+  botones 3D les emiten eventos, regreso automático con reloj real, y
+  **guardián de rendimiento**: si el rig está a >30 m — otra zona — no se
+  redibuja ni se sube textura; los paneles ECharts tampoco actualizan datos):
   - `js/pipeline.js` — BI: el viaje del dato, 4 vistas (`enfocar`).
   - `js/agentes.js` — IA: escenas por agente: chat, correos, señas con mano
     realista, RAG (`enfocar` desde las fichas clickeables).
@@ -73,8 +75,7 @@ teletransporta, el fondo 360 cambia):
   - `js/escenas-web.js` — Web: 3 pantallas de servicio (app viva, tienda,
     recorrido VR en primera persona).
   - `js/panorama.js` — Panorama: carrera de dos empresas por métrica
-    (`metrica`) + vistas de fase; `fase: N` la fija para la galería del fondo
-    y trae guardián de rendimiento (no redibuja si el rig está a >30 m).
+    (`metrica`) + vistas de fase; `fase: N` la fija para la galería del fondo.
 - `js/terminal-codigo.js` — terminal de código antigua (ya sin uso en escena).
 - `js/botones.js` — botones 3D que disparan eventos a paneles/pantallas.
 - `js/ambiente.js` — partículas, pulsos de piso, holograma del logo.
@@ -119,9 +120,9 @@ Hecho — las 5 zonas renovadas por completo:
   revive; MP3 regenerados para todos los guiones actuales.
 
 Pendiente:
-- Probar en el Quest físico: rendimiento con 5 videos + ~20 canvases vivos
-  (el guardián de distancia solo existe en panorama-vivo; si el Quest sufre,
-  replicarlo en pipeline/agentes/dev-vivo/escenas-web/paneles).
+- Probar en el Quest físico: rendimiento con los 5 videos (los ~20 canvases
+  ya solo redibujan en la zona activa gracias al guardián de distancia,
+  aplicado el 2026-07-09 a todas las pantallas y paneles).
 - Plan B offline para la feria: servir desde laptop en red local requiere
   HTTPS local (WebXR no corre por HTTP salvo en localhost) — sin resolver.
 - `js/terminal-codigo.js` quedó sin uso en escena: decidir si se elimina.

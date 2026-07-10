@@ -531,10 +531,22 @@
       if (this.el.hasLoaded) aplicarTextura();
       else this.el.addEventListener('loaded', aplicarTextura);
 
-      this.datosIntervalo = setInterval(() => def.actualizar(this.chart, estado), def.intervalo);
+      // guardián de rendimiento: sin visitante cerca, ni datos ni textura
+      this.posMundo = new THREE.Vector3();
+      const lejos = () => {
+        const rig = document.querySelector('#rig');
+        if (!rig) return false;
+        this.el.object3D.getWorldPosition(this.posMundo);
+        return rig.object3D.position.distanceTo(this.posMundo) > 30;
+      };
+
+      this.datosIntervalo = setInterval(() => {
+        if (!lejos()) def.actualizar(this.chart, estado);
+      }, def.intervalo);
       // ponytail: refresco de textura a 10 fps, suficiente y amable con el Quest
       this.texturaIntervalo = setInterval(() => {
         if (!this.textura) aplicarTextura(); // rescate si 'loaded' nunca llegó
+        if (lejos()) return;
         if (this.textura) this.textura.needsUpdate = true;
       }, 100);
     },
